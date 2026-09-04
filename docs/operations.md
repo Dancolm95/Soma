@@ -26,6 +26,12 @@ mediante `--dart-define`. No se almacenan en el repositorio.
 |----------------------------|--------------------------------------------------|
 | `SUPABASE_URL`             | URL del proyecto Supabase (https://xxx.supabase.co) |
 | `SUPABASE_PUBLISHABLE_KEY` | Publishable (anon) key del proyecto              |
+| `SUPABASE_REDIRECT_URL`    | (Solo Web) URL de retorno OAuth registrada en la allow list |
+
+`SUPABASE_REDIRECT_URL` solo aplica a Web (en Android se usa el deep link
+`com.soma.expenses://auth-callback/`). Debe coincidir con la URL donde se sirve
+la app, p. ej. `http://localhost:8080`, y estar registrada en la allow list de
+Supabase Auth.
 
 ### WSL / Linux
 
@@ -108,6 +114,51 @@ Para detener el stack: `supabase stop`.
   3. `supabase db push --dry-run` (validar).
   4. `supabase db push`.
   5. `supabase migration list` (confirmar sincronización).
+
+### Google OAuth en soma-dev (configuración DEV)
+
+Configuración necesaria (una sola vez, no versionada):
+
+1. **Google Cloud**: proyecto Soma DEV con OAuth consent screen y un
+   `OAuth Client ID` de tipo *Web application*. Como *Authorized redirect URI*
+   registrar el callback de Supabase:
+   `https://<ref>.supabase.co/auth/v1/callback`.
+2. **Supabase Auth (provider Google)**: habilitar el provider en `soma-dev`
+   con el `Client ID` y el `Client Secret` de Google. El `Client Secret` queda
+   solo en la configuración de Supabase (backend).
+3. **Redirect allow list**: registrar en Supabase Auth las URLs de retorno:
+   - Web: la URL explícita de desarrollo (p. ej. `http://localhost:8080`).
+   - Android: `com.soma.expenses://auth-callback/`.
+
+No se configuran wildcards ni redirects externos no controlados.
+No se configura producción.
+
+### Email confirmation y password recovery en soma-dev (Tarea 2.7)
+
+- **Email confirmation**: habilitada por defecto en Supabase Auth.
+  `signUp` usa `emailRedirectTo` apuntando a `_authRedirectTo` (mismo redirect
+  que OAuth). El usuario recibe un correo con enlace de confirmación.
+- **Password recovery**: `resetPasswordForEmail` envía correo de recuperación
+  con `redirectTo` apuntando a `_authRedirectTo`. El usuario retorna a Soma
+  con una sesión temporal de recovery (detectada por metadata `iss`).
+- **Email delivery**: actualmente usa el proveedor de email por defecto de
+  Supabase (GoTrue SMTP interno). Limitaciones conocidas:
+  - Rate limiting por defecto de Supabase Auth (no modificado).
+  - Puede tener restricciones para producción (pendiente estrategia SMTP propia).
+- **CAPTCHA**: no implementado. Rate limiting aplica según configuración
+  predeterminada de Supabase. Para producción podría requerirse protección
+  adicional (decisión pendiente).
+- **Redirect centralizado**: `SupabaseAuthService._authRedirectTo` es la
+  fuente única de redirects para OAuth, email confirmation y password recovery.
+
+### Diferencias Web / Android
+
+| Aspecto         | Web                                        | Android                                        |
+|-----------------|--------------------------------------------|------------------------------------------------|
+| `redirectTo`    | `SUPABASE_REDIRECT_URL` (allow list)       | `com.soma.expenses://auth-callback/` (deep link) |
+| Retorno         | Misma pestaña (`_self`) → URL fragment      | Navegador externo → deep link → foreground      |
+| Config extra    | Ninguna                                    | intent-filter en `AndroidManifest.xml`          |
+| Flujos          | OAuth, email confirmation, password recovery | OAuth, email confirmation, password recovery   |
 
 ## Producción
 

@@ -24,7 +24,9 @@
 - Tarea 2.2 — APPROVED
 - Tarea 2.3 — APPROVED
 - Tarea 2.4 — APPROVED
-- Tarea 2.5 — IN_PROGRESS
+- Tarea 2.5 — APPROVED
+- Tarea 2.6 — APPROVED
+- Tarea 2.7 — IN_PROGRESS
 
 ## Identificador Android
 
@@ -51,6 +53,38 @@
   `profile.id = auth.users.id` y `base_currency = USD`; aislamiento RLS
   verificado (usuario A no lee perfil de B); datos de prueba eliminados.
 
+## Validación Tarea 2.6
+
+- Google OAuth (Web + Android) implementado sobre `signInWithOAuth` de
+  supabase_flutter sin SDK nativo ni dependencias nuevas.
+- Provider Google configurado y verificado en `soma-dev`; allow list de
+  redirects registrada (`http://localhost:8080` y
+  `com.soma.expenses://auth-callback/`).
+- Smoke test real: Web (2 cuentas Google nuevas) y Android (navegador externo
+  → deep link → foreground → logout). `profile.id = auth.users.id` y
+  `base_currency = USD` verificados. Datos de prueba eliminados.
+
+## Validación Tarea 2.7
+
+- Email confirmation y password recovery implementados sobre Supabase Auth sin
+  dependencias nuevas.
+- `emailRedirectTo` en `signUp` y `redirectTo` en `resetPasswordForEmail`
+  centralizados en `SupabaseAuthService._authRedirectTo`.
+- `AuthController` detecta estado `passwordRecovery` basado en metadata de sesión.
+- UI: `ForgotPasswordScreen` con respuesta neutral, `ResetPasswordScreen` para
+  establecer nueva contraseña.
+- Tests unitarios: 31 tests pasando (sin regresión).
+- Análisis estático: sin issues.
+- Build Web: exitoso.
+- Build Android: requiere Android SDK (no disponible en entorno de desarrollo
+  actual). Pendiente validación en entorno con Android SDK.
+- Pruebas de integración reales (Web y Android) pendientes de ejecución manual
+  contra `soma-dev`.
+
 ## Pendientes de decisión
 
 - **Antes de implementar FX**: definir el comportamiento cuando el usuario cambia su moneda base.
+- **Comportamiento "mismo email" en OAuth (Tarea 2.6)**: Supabase Auth
+  enlaza automáticamente identidades con el mismo email (automatic linking,
+  habilitado por defecto). Decidir si este comportamiento es aceptable o si
+  requiere una política explícita antes de dar por cerrada la tarea.

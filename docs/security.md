@@ -30,6 +30,70 @@
 
 Todo archivo/documento externo es entrada no confiable.
 
+## Frontera OAuth — Google (Tarea 2.6)
+
+- El flujo OAuth usa exclusivamente Supabase Auth + `signInWithOAuth`. No se
+  integra el SDK nativo de Google ni se manejan tokens manualmente.
+- `Google Client Secret` vive únicamente en la configuración del provider de
+  Supabase Auth (backend). Nunca en Flutter ni en Git.
+- `service_role` nunca llega a Flutter.
+
+### Redirects y deep link autorizados
+
+- Android: `com.soma.expenses://auth-callback/` (deep link declarado en el
+  manifest, sin App Links HTTPS todavía).
+- Web: una URL explícita y controlada de desarrollo, registrada en la allow
+  list de Supabase Auth. No se usan wildcards ni redirects externos no
+  controlados.
+- Todo `redirectTo` debe estar registrado en la allow list. `redirectTo` nunca
+  se acepta desde la entrada del usuario.
+- Centralizado en `SupabaseAuthService._authRedirectTo`. Reutilizado por OAuth,
+  email confirmation y password recovery.
+
+### Ubicación de secretos
+
+- `Google Client Secret`: configuración del provider en Supabase (backend).
+- Publishable (anon) key: única credencial que recibe Flutter (build-time).
+- `service_role`, JWT signing secret, contraseña de BD: nunca en el cliente.
+- Sin secretos en el repositorio.
+
+## Password recovery (Tarea 2.7)
+
+### Enumeración de cuentas
+
+- `resetPasswordForEmail` siempre devuelve respuesta neutral:
+  "Si existe una cuenta asociada, recibirás instrucciones por correo."
+- No revela si el email existe o no.
+- Los errores de Supabase Auth se capturan y también devuelven respuesta neutral.
+
+### Estado de recuperación
+
+- `AuthController` distingue tres estados de sesión:
+  - `authenticated`: sesión normal.
+  - `passwordRecovery`: sesión temporal de recuperación.
+  - `unauthenticated`: sin sesión.
+- La detección de `passwordRecovery` se basa en metadata de la sesión
+  (`iss` contiene "recovery").
+- Durante `passwordRecovery`, el usuario NO accede a `SignedInScreen`.
+  Se muestra `ResetPasswordScreen` exclusivamente.
+
+### Actualización de contraseña
+
+- Solo posible durante una sesión de recovery.
+- La contraseña nunca se almacena ni loguea en el cliente.
+- Validación de longitud mínima en cliente (primero pase), backend es autoritativo.
+- Tras actualización exitosa, se cierra sesión y el usuario debe iniciar sesión
+  con la nueva contraseña.
+- Tokens de recovery nunca se manipulan manualmente. Supabase Auth los gestiona
+  íntegramente.
+
+### Redirects de email
+
+- Email de confirmación: usa `emailRedirectTo` en `signUp`.
+- Email de password recovery: usa `redirectTo` en `resetPasswordForEmail`.
+- Ambos apuntan a `_authRedirectTo` (mismo redirect que OAuth).
+- Supabase Auth valida que el redirect esté en la allow list configurada.
+
 ## Frontera de autorización — perfiles (Tarea 2.3)
 
 Primera frontera real de autorización implementada.
