@@ -2,8 +2,8 @@
 
 Aplicación personal de gestión de gastos asistida por IA.
 
-> Estado actual: Fase 1 completada. Integración Supabase básica lista (Tarea 2.1).
-> Sin autenticación funcional, tablas financieras ni funcionalidades de negocio todavía.
+> Estado actual: Fase 2 en curso. Autenticación email/password y ciclo de sesión
+> implementados (Tarea 2.4). Pendientes las funcionalidades financieras y de negocio.
 
 ## Stack
 
@@ -12,38 +12,83 @@ Aplicación personal de gestión de gastos asistida por IA.
 
 ## Requisitos
 
-- Flutter SDK 3.47.2 o superior (canal estable).
+- Flutter SDK 3.47.2 o superior (canal estable). Se gestiona con FVM.
 - Para Android: Android SDK con licencias aceptadas.
 - Para Web en navegador de Windows: Chrome/Edge instalado en Windows y
   `CHROME_EXECUTABLE` apuntando al ejecutable (ver sección "Ejecutar").
 
+## Setup de macOS
+
+### Flutter (FVM)
+
+```bash
+brew install fvm
+fvm install stable      # instala Flutter 3.47.2
+fvm use stable          # dentro del repositorio, usa la versión del proyecto
+```
+
+Desde la raíz del repositorio, reemplazar `flutter` por `fvm flutter`
+(o `fvm dart` para format/analyze).
+
+### Android SDK
+
+```bash
+brew install --cask android-commandlinetools
+export ANDROID_HOME=/opt/homebrew/share/android-commandlinetools
+export ANDROID_SDK_ROOT=$ANDROID_HOME
+yes | sdkmanager --licenses
+sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0"
+```
+
+Añadir `ANDROID_HOME` y `ANDROID_SDK_ROOT` a `~/.zshrc` para que persistan.
+
+### Supabase local
+
+```bash
+brew install supabase/tap/supabase   # o: npm install -g supabase
+```
+
+Requisito: Docker Desktop corriendo. Después, en la raíz del repositorio:
+
+```bash
+supabase start
+supabase stop
+```
+
 ## Ejecutar
 
-Hay tres maneras de levantar la app. Todas funcionan desde WSL; ninguna usa el
-target de escritorio Linux (fuera del alcance del MVP).
+La app se ejecuta en WSL y en macOS. Ninguno usa el target de escritorio
+Linux (fuera del alcance del MVP). Con FVM, reemplazar `flutter` por
+`fvm flutter`.
 
 ### Web sin navegador (server)
 
-Sirve la app en un puerto local, sin necesidad de Chrome instalado en WSL:
+Sirve la app en un puerto local, sin necesidad de Chrome instalado:
 
 ```bash
 flutter run -d web-server --web-port 8080
 ```
 
-Luego abrir `http://localhost:8080` en el navegador de Windows.
+Luego abrir `http://localhost:8080` en el navegador.
 
-### Web en el navegador de Windows
+### Web en el navegador
 
-Requiere apuntar Flutter al Chrome instalado en Windows, ya que WSL no tiene
-Chrome. Ajusta la ruta si tu instalación difiere:
+- **macOS**: Chrome es nativo, no hace falta configuración extra.
 
-```bash
-export CHROME_EXECUTABLE="/mnt/c/Program Files/Google/Chrome/Application/chrome.exe"
-flutter run -d chrome
-```
+  ```bash
+  flutter run -d chrome
+  ```
 
-Para hacerlo permanente, añade esa línea `export CHROME_EXECUTABLE=...` a tu
-`~/.bashrc`.
+- **WSL**: hay que apuntar Flutter al Chrome instalado en Windows, ya que WSL
+  no tiene Chrome. Ajusta la ruta si tu instalación difiere:
+
+  ```bash
+  export CHROME_EXECUTABLE="/mnt/c/Program Files/Google/Chrome/Application/chrome.exe"
+  flutter run -d chrome
+  ```
+
+  Para hacerlo permanente, añade esa línea `export CHROME_EXECUTABLE=...` a tu
+  `~/.bashrc`.
 
 ### Android
 
@@ -75,6 +120,9 @@ Ver `docs/operations.md` para instrucciones completas de WSL y macOS.
 
 ## Validación
 
+Con FVM, anteponer `fvm` a cada comando (`fvm flutter analyze`,
+`fvm dart format`, etc.).
+
 ```bash
 flutter analyze                    # análisis estático
 dart format --set-exit-if-changed .  # verifica formato
@@ -90,16 +138,26 @@ lib/
   main.dart                         # punto de entrada (inicializa Supabase)
   application/
     app.dart                        # widget raíz
+    auth/
+      auth_service.dart             # contrato AuthService + tipos de resultado
+      auth_controller.dart          # estado de autenticación (ChangeNotifier)
     configuration/
       app_environment.dart          # entorno y configuración build-time
   features/
-    launch/
-      launch_screen.dart            # pantalla mínima de verificación
+    auth/
+      auth_gate.dart                # selección de pantalla según sesión
+      auth_screen.dart              # formulario email/password
+      signed_in_screen.dart         # pantalla autenticada mínima
   infrastructure/
+    auth/
+      supabase_auth_service.dart    # implementación Supabase de AuthService
+      auth_error_messages.dart      # mapeo de errores a mensajes seguros
     supabase/
       supabase_initializer.dart     # bootstrap del cliente Supabase
 supabase/
   config.toml                       # configuración local Supabase CLI
+  migrations/                       # migraciones SQL
+  tests/                            # tests RLS (pgTAP)
 ```
 
 Convención prevista para tareas posteriores (aún sin crear):

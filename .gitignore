@@ -53,4 +53,4 @@ supabase/.branches
 supabase/.temp
 
 # FVM Version Cache
-.fvm/
+.fvm/flutter_sdk
