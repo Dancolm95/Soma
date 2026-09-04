@@ -51,3 +51,6 @@ secrets.*
 # Supabase local development runtime (generated; not versionable)
 supabase/.branches
 supabase/.temp
+
+# FVM Version Cache
+.fvm/flutter_sdk
