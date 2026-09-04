@@ -16,11 +16,13 @@
 ## Estado actual
 
 - Tarea 1.1 — APPROVED
-- Tarea 1.2 — IN_PROGRESS
+- Tarea 1.2 — APPROVED
+- Tarea 1.3 — IN_PROGRESS
+
+## Identificador Android
+
+- `applicationId`/package definitivo y aprobado: `com.soma.expenses`
 
 ## Pendientes de decisión
 
-- **Antes de autenticación externa**: definir `applicationId`/package definitivo.
-  - Valor actual: `com.somaapp.soma_app`
-  - Estado: PROVISIONAL
 - **Antes de implementar FX**: definir el comportamiento cuando el usuario cambia su moneda base.

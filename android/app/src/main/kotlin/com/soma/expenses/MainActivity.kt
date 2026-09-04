@@ -1,4 +1,4 @@
-package com.somaapp.soma_app
+package com.soma.expenses
 
 import io.flutter.embedding.android.FlutterActivity
 
