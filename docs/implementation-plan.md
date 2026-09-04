@@ -15,9 +15,12 @@
 
 ## Estado actual
 
+- Fase 1 — COMPLETED
 - Tarea 1.1 — APPROVED
 - Tarea 1.2 — APPROVED
-- Tarea 1.3 — IN_PROGRESS
+- Tarea 1.3 — APPROVED
+- Fase 2 — IN_PROGRESS
+- Tarea 2.1 — IN_PROGRESS
 
 ## Identificador Android
 

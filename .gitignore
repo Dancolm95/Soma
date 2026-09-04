@@ -47,3 +47,7 @@ app.*.map.json
 *.local
 secrets.*
 **/secrets/**
+
+# Supabase local development runtime (generated; not versionable)
+supabase/.branches
+supabase/.temp

@@ -2,8 +2,8 @@
 
 Aplicación personal de gestión de gastos asistida por IA.
 
-> Estado actual: fundación técnica mínima. Sin funcionalidades de negocio,
-> autenticación, Supabase, Gemini ni Frankfurter todavía.
+> Estado actual: Fase 1 completada. Integración Supabase básica lista (Tarea 2.1).
+> Sin autenticación funcional, tablas financieras ni funcionalidades de negocio todavía.
 
 ## Stack
 
@@ -57,16 +57,21 @@ Para listar dispositivos disponibles: `flutter devices`.
 
 ## Configuración por entorno
 
-El entorno activo se selecciona en tiempo de compilación con `--dart-define`.
-No se usan ni se comprometen secretos en el repositorio.
+El entorno y las credenciales Supabase se pasan en tiempo de compilación
+con `--dart-define`. Ningún secreto se almacena en el repositorio.
 
 ```bash
-flutter run --dart-define=APP_ENV=development   # por defecto
-flutter run --dart-define=APP_ENV=staging
-flutter run --dart-define=APP_ENV=production
+flutter run -d web-server --web-port 8080 \
+  --dart-define=APP_ENV=development \
+  --dart-define=SUPABASE_URL=https://<ref>.supabase.co \
+  --dart-define=SUPABASE_PUBLISHABLE_KEY=<anon-key>
 ```
 
-Si `APP_ENV` no se define, se usa `development`.
+Si `APP_ENV` no se define, se usa `development`. Si `SUPABASE_URL` o
+`SUPABASE_PUBLISHABLE_KEY` no se proporcionan, la aplicación falla en
+el arranque con un mensaje claro (sin exponer los valores).
+
+Ver `docs/operations.md` para instrucciones completas de WSL y macOS.
 
 ## Validación
 
@@ -82,19 +87,22 @@ flutter build apk --debug          # compila Android
 
 ```
 lib/
-  main.dart                         # punto de entrada
+  main.dart                         # punto de entrada (inicializa Supabase)
   application/
-    app.dart                        # widget raíz (configuración de app)
+    app.dart                        # widget raíz
     configuration/
       app_environment.dart          # entorno y configuración build-time
   features/
     launch/
       launch_screen.dart            # pantalla mínima de verificación
+  infrastructure/
+    supabase/
+      supabase_initializer.dart     # bootstrap del cliente Supabase
+supabase/
+  config.toml                       # configuración local Supabase CLI
 ```
 
-Convención prevista para tareas posteriores (aún sin crear, para no introducir
-módulos vacíos especulativos):
+Convención prevista para tareas posteriores (aún sin crear):
 
 - `lib/features/<feature>/` — funcionalidades de negocio.
 - `lib/domain/` — dominio compartido.
-- `lib/infrastructure/` — integraciones (Supabase, IA, FX, etc.).

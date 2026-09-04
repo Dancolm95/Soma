@@ -13,10 +13,85 @@
 
 - Secretos fuera del repositorio.
 - Nunca commitear secretos.
+- Flutter solo recibe la publishable (anon) key de Supabase.
+- service_role, JWT signing secret y contraseña de base de datos son
+  exclusivamente backend y nunca llegan al cliente.
+
+## Configuración Supabase
+
+La aplicación necesita dos valores en tiempo de compilación, proporcionados
+mediante `--dart-define`. No se almacenan en el repositorio.
+
+| Variable                   | Descripción                                      |
+|----------------------------|--------------------------------------------------|
+| `SUPABASE_URL`             | URL del proyecto Supabase (https://xxx.supabase.co) |
+| `SUPABASE_PUBLISHABLE_KEY` | Publishable (anon) key del proyecto              |
+
+### WSL / Linux
+
+```bash
+flutter run -d web-server --web-port 8080 \
+  --dart-define=SUPABASE_URL=https://<ref>.supabase.co \
+  --dart-define=SUPABASE_PUBLISHABLE_KEY=<publishable-key> \
+  --dart-define=APP_ENV=development
+```
+
+Para evitar exponer valores en el historial de la terminal, usa un
+archivo local (no versionado):
+
+```bash
+# .supabase.local  (añadido a .gitignore via *.local)
+export SUPABASE_URL="https://<ref>.supabase.co"
+export SUPABASE_PUBLISHABLE_KEY="<publishable-key>"
+```
+
+```bash
+source .supabase.local
+flutter run -d web-server --web-port 8080 \
+  --dart-define=SUPABASE_URL=$SUPABASE_URL \
+  --dart-define=SUPABASE_PUBLISHABLE_KEY=$SUPABASE_PUBLISHABLE_KEY
+```
+
+### macOS
+
+Mismo procedimiento. Reemplazar `-d web-server` por `-d chrome`
+o el dispositivo/simulador correspondiente.
+
+```bash
+source .supabase.local
+flutter run -d chrome \
+  --dart-define=SUPABASE_URL=$SUPABASE_URL \
+  --dart-define=SUPABASE_PUBLISHABLE_KEY=$SUPABASE_PUBLISHABLE_KEY
+```
+
+## Supabase CLI y stack local
+
+La CLI de Supabase (v2.116.0) está inicializada en el repositorio
+(`supabase/config.toml`). El stack local completo requiere Docker.
+
+- **WSL**: Docker 25.0.3 disponible y verificado. `supabase start` ejecutado
+  correctamente (Tarea 2.1).
+- **macOS**: instalar Docker Desktop y ejecutar `supabase start`
+  desde la raíz del repositorio.
+
+El stack local expone:
+
+| Servicio      | URL por defecto              |
+|---------------|------------------------------|
+| API / Auth    | http://127.0.0.1:54321       |
+| Studio        | http://127.0.0.1:54323       |
+| PostgreSQL    | postgresql://postgres:postgres@127.0.0.1:54322/postgres |
+
+Las credenciales del stack local (publishable key y URL) se obtienen
+de la salida de `supabase start` y se proporcionan via `--dart-define`.
+No se commitean.
+
+Para detener el stack: `supabase stop`.
 
 ## Entornos
 
 - Separación futura de entornos (a definir antes de producción).
+- Región aprobada para producción: São Paulo / sa-east-1.
 
 ## Producción
 
