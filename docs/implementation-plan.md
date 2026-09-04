@@ -29,6 +29,18 @@
 
 - `applicationId`/package definitivo y aprobado: `com.soma.expenses`
 
+## Dependencias dev
+
+- `integration_test` (SDK Flutter) — añadida durante la validación integrada de
+  Tarea 2.4 (registrada antes de su aprobación explícita). Futuras dependencias
+  deben escalarse previamente según AGENTS.md.
+
+## Validación Tarea 2.4
+
+- Flujo de autenticación validado contra Supabase local en Web (ChromeDriver) y
+  Android (emulador): registro → autenticado → logout → login → restauración de
+  sesión. `profiles.id = auth.users.id` verificado.
+
 ## Pendientes de decisión
 
 - **Antes de implementar FX**: definir el comportamiento cuando el usuario cambia su moneda base.
