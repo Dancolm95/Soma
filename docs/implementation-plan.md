@@ -24,6 +24,7 @@
 - Tarea 2.2 — APPROVED
 - Tarea 2.3 — APPROVED
 - Tarea 2.4 — APPROVED
+- Tarea 2.5 — IN_PROGRESS
 
 ## Identificador Android
 
@@ -40,6 +41,15 @@
 - Flujo de autenticación validado contra Supabase local en Web (ChromeDriver) y
   Android (emulador): registro → autenticado → logout → login → restauración de
   sesión. `profiles.id = auth.users.id` verificado.
+
+## Validación Tarea 2.5
+
+- Proyecto remoto `soma-dev` vinculado y migración `profiles` desplegada.
+  Verificación remota: `profiles` con FK a `auth.users`, constraint
+  PEN/USD/EUR, RLS, policies, grants, `handle_new_user()` y trigger de creación.
+- Smoke test remoto: `auth user → trigger → profile` confirmado,
+  `profile.id = auth.users.id` y `base_currency = USD`; aislamiento RLS
+  verificado (usuario A no lee perfil de B); datos de prueba eliminados.
 
 ## Pendientes de decisión
 

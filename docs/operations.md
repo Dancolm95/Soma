@@ -93,6 +93,22 @@ Para detener el stack: `supabase stop`.
 - Separación futura de entornos (a definir antes de producción).
 - Región aprobada para producción: São Paulo / sa-east-1.
 
+### soma-dev (desarrollo)
+
+- Proyecto Supabase remoto exclusivo de desarrollo.
+- Región: São Paulo / sa-east-1.
+- El esquema remoto se gobierna exclusivamente mediante migraciones
+  versionadas del repositorio (`supabase db push`).
+- Prohibido modificar tablas/schema manualmente desde Dashboard o SQL Editor.
+- Prohibido `db reset --linked`, `migration repair`, `db pull` u operaciones
+  destructivas sin aprobación previa.
+- Flujo de despliegue:
+  1. `supabase link --project-ref <PROJECT_REF>` (una sola vez).
+  2. `supabase migration list` (inspeccionar pendientes).
+  3. `supabase db push --dry-run` (validar).
+  4. `supabase db push`.
+  5. `supabase migration list` (confirmar sincronización).
+
 ## Producción
 
 - Backups automáticos antes de producción.
