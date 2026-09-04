@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:soma_app/application/configuration/app_environment.dart';
-import 'package:soma_app/features/launch/launch_screen.dart';
+
+import 'package:soma_app/application/auth/auth_controller.dart';
+import 'package:soma_app/features/auth/auth_gate.dart';
 
 /// Root widget of the Soma application.
 ///
 /// Owns application-wide configuration (theme, title) and delegates the
-/// visible content to feature-level screens.
+/// visible content to the authentication flow.
 class SomaApp extends StatelessWidget {
-  const SomaApp({super.key, required this.config});
+  const SomaApp({super.key, required this.authController});
 
-  final AppConfig config;
+  final AuthController authController;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Soma',
       theme: ThemeData(useMaterial3: true),
-      home: LaunchScreen(environmentName: config.environment.name),
+      home: AuthGate(authController: authController),
     );
   }
 }

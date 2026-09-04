@@ -20,7 +20,10 @@
 - Tarea 1.2 — APPROVED
 - Tarea 1.3 — APPROVED
 - Fase 2 — IN_PROGRESS
-- Tarea 2.1 — IN_PROGRESS
+- Tarea 2.1 — APPROVED
+- Tarea 2.2 — APPROVED
+- Tarea 2.3 — APPROVED
+- Tarea 2.4 — APPROVED
 
 ## Identificador Android
 
