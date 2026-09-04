@@ -58,6 +58,17 @@ DETENERSE Y ESCALAR antes de cambiar:
 
 Si la documentación y la tarea parecen contradecirse: DETENERSE Y ESCALAR.
 
+## Código y comentarios
+
+- Priorizar código claro y autoexplicativo.
+- No añadir comentarios que simplemente describan lo que el código ya expresa.
+- No comentar rutinariamente cada función, clase, variable o bloque.
+- Usar comentarios cuando expliquen decisiones no obvias, restricciones de
+  seguridad, invariantes, workarounds o razones importantes.
+- Evitar DartDoc/documentación rutinaria que no aporte información.
+- Los controles de seguridad no deben eliminarse simplemente para reducir
+  comentarios.
+
 ## Validación
 
 ```bash
