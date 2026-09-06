@@ -63,5 +63,18 @@ void main() {
 
       controller.dispose();
     });
+
+    test('signInWithGoogle delegates to the service', () async {
+      final service = FakeAuthService();
+      final controller = AuthController(service);
+
+      service.nextSignInWithGoogleResult = const OAuthFlowStarted();
+
+      final result = await controller.signInWithGoogle();
+
+      expect(result, isA<OAuthFlowStarted>());
+
+      controller.dispose();
+    });
   });
 }

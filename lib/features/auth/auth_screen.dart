@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:soma_app/application/auth/auth_controller.dart';
 import 'package:soma_app/application/auth/auth_service.dart';
+import 'package:soma_app/features/auth/forgot_password_screen.dart';
 
 /// Email/password authentication form (login and sign-up).
 class AuthScreen extends StatefulWidget {
@@ -62,6 +63,33 @@ class _AuthScreenState extends State<AuthScreen> {
           _isSubmitting = false;
           _errorMessage = message;
         });
+      case OAuthFlowStarted():
+        setState(() => _isSubmitting = false);
+    }
+  }
+
+  Future<void> _signInWithGoogle() async {
+    setState(() {
+      _isSubmitting = true;
+      _errorMessage = null;
+      _confirmationMessage = null;
+    });
+
+    final result = await widget.authController.signInWithGoogle();
+
+    if (!mounted) return;
+
+    switch (result) {
+      case OAuthFlowStarted():
+        setState(() => _isSubmitting = false);
+      case AuthFailure(:final message):
+        setState(() {
+          _isSubmitting = false;
+          _errorMessage = message;
+        });
+      case AuthSuccess():
+      case EmailConfirmationRequired():
+        setState(() => _isSubmitting = false);
     }
   }
 
@@ -168,6 +196,39 @@ class _AuthScreenState extends State<AuthScreen> {
                             ? '¿Ya tienes cuenta? Inicia sesión'
                             : '¿No tienes cuenta? Regístrate',
                       ),
+                    ),
+                    if (!isSignUp) ...[
+                      const SizedBox(height: 8),
+                      TextButton(
+                        onPressed: _isSubmitting
+                            ? null
+                            : () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute<void>(
+                                    builder: (_) => ForgotPasswordScreen(
+                                      authController: widget.authController,
+                                    ),
+                                  ),
+                                );
+                              },
+                        child: const Text('Olvidé mi contraseña'),
+                      ),
+                    ],
+                    const SizedBox(height: 8),
+                    const Row(
+                      children: [
+                        Expanded(child: Divider()),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8),
+                          child: Text('o'),
+                        ),
+                        Expanded(child: Divider()),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    OutlinedButton(
+                      onPressed: _isSubmitting ? null : _signInWithGoogle,
+                      child: const Text('Continuar con Google'),
                     ),
                   ],
                 ),

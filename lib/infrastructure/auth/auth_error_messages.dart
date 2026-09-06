@@ -28,3 +28,10 @@ String signUpErrorMessage(AuthException error) {
   }
   return 'No se pudo completar el registro. Inténtalo de nuevo.';
 }
+
+/// Maps Supabase Auth errors from the Google OAuth flow to user-safe messages.
+///
+/// OAuth handshake details are never surfaced to the user.
+String oAuthErrorMessage(AuthException error) {
+  return 'No se pudo completar el acceso con Google. Inténtalo de nuevo.';
+}

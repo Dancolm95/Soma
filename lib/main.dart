@@ -14,7 +14,12 @@ void main() async {
   await SupabaseInitializer.initialize(config);
 
   final authController = AuthController(
-    SupabaseAuthService(Supabase.instance.client),
+    SupabaseAuthService(
+      Supabase.instance.client,
+      webRedirectUrl: config.supabaseRedirectUrl.isEmpty
+          ? null
+          : config.supabaseRedirectUrl,
+    ),
   );
 
   runApp(SomaApp(authController: authController));

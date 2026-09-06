@@ -121,5 +121,113 @@ void main() {
         expect(find.text('Sesión iniciada'), findsNothing);
       },
     );
+
+    testWidgets('shows the Google sign-in button', (tester) async {
+      final service = FakeAuthService();
+      await pumpApp(tester, service);
+      service.emit(null);
+      await tester.pump();
+
+      expect(find.text('Continuar con Google'), findsOneWidget);
+    });
+
+    testWidgets('starts the Google flow without navigating', (tester) async {
+      final service = FakeAuthService();
+      await pumpApp(tester, service);
+      service.emit(null);
+      await tester.pump();
+
+      service.nextSignInWithGoogleResult = const OAuthFlowStarted();
+
+      await tester.tap(find.text('Continuar con Google'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Continuar con Google'), findsOneWidget);
+      expect(find.text('Sesión iniciada'), findsNothing);
+    });
+
+    testWidgets('presents Google OAuth errors safely', (tester) async {
+      final service = FakeAuthService();
+      await pumpApp(tester, service);
+      service.emit(null);
+      await tester.pump();
+
+      service.nextSignInWithGoogleResult = const AuthFailure(
+        'No se pudo completar el acceso con Google. Inténtalo de nuevo.',
+      );
+
+      await tester.tap(find.text('Continuar con Google'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text(
+          'No se pudo completar el acceso con Google. Inténtalo de nuevo.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.textContaining('AuthException'), findsNothing);
+    });
+
+    testWidgets(
+      'password recovery update ends on the login screen via auth state',
+      (tester) async {
+        final service = FakeAuthService();
+        final controller = AuthController(service);
+        addTearDown(controller.dispose);
+        addTearDown(service.dispose);
+        await tester.pumpWidget(SomaApp(authController: controller));
+
+        service.emitPasswordRecovery(
+          const SessionUser(email: 'user@example.com'),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Actualizar contraseña'), findsOneWidget);
+
+        service.nextUpdatePasswordResult = const PasswordUpdateSuccess();
+
+        await tester.enterText(
+          find.widgetWithText(TextFormField, 'Nueva contraseña'),
+          'newsecret123',
+        );
+        await tester.enterText(
+          find.widgetWithText(TextFormField, 'Confirmar contraseña'),
+          'newsecret123',
+        );
+        await tester.tap(find.text('Actualizar contraseña'));
+        await tester.pumpAndSettle();
+
+        expect(service.signOutCalled, isTrue);
+        expect(controller.status, AuthStatus.unauthenticated);
+        expect(find.text('Actualizar contraseña'), findsNothing);
+        expect(find.text('Entrar'), findsOneWidget);
+      },
+    );
+
+    testWidgets('recovery link pops the forgot-password screen automatically', (
+      tester,
+    ) async {
+      final service = FakeAuthService();
+      final controller = AuthController(service);
+      addTearDown(controller.dispose);
+      addTearDown(service.dispose);
+      await tester.pumpWidget(SomaApp(authController: controller));
+
+      service.emit(null);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Olvidé mi contraseña'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Recuperar contraseña'), findsOneWidget);
+
+      service.emitPasswordRecovery(
+        const SessionUser(email: 'user@example.com'),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Recuperar contraseña'), findsNothing);
+      expect(find.text('Actualizar contraseña'), findsOneWidget);
+    });
   });
 }

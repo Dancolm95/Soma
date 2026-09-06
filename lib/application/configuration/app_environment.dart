@@ -32,6 +32,7 @@ class AppConfig {
     required this.environment,
     this.supabaseUrl = '',
     this.supabasePublishableKey = '',
+    this.supabaseRedirectUrl = '',
   });
 
   factory AppConfig.fromEnvironment() {
@@ -40,10 +41,12 @@ class AppConfig {
     const supabasePublishableKey = String.fromEnvironment(
       'SUPABASE_PUBLISHABLE_KEY',
     );
+    const supabaseRedirectUrl = String.fromEnvironment('SUPABASE_REDIRECT_URL');
     return AppConfig(
       environment: AppEnvironment.fromString(raw),
       supabaseUrl: supabaseUrl,
       supabasePublishableKey: supabasePublishableKey,
+      supabaseRedirectUrl: supabaseRedirectUrl,
     );
   }
 
@@ -56,4 +59,12 @@ class AppConfig {
   /// Supabase publishable (anon) key.
   /// Provided via --dart-define=SUPABASE_PUBLISHABLE_KEY=...
   final String supabasePublishableKey;
+
+  /// Redirect URL for Web OAuth flows (e.g. `http://localhost:8080`).
+  ///
+  /// Only relevant on Web. On Android the approved deep link
+  /// `com.soma.expenses://auth-callback/` is used instead. Must match an entry
+  /// in the Supabase Auth allow list. Provided via
+  /// `--dart-define=SUPABASE_REDIRECT_URL=...`
+  final String supabaseRedirectUrl;
 }

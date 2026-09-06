@@ -60,4 +60,19 @@ void main() {
       );
     });
   });
+
+  group('oAuthErrorMessage', () {
+    test('never surfaces OAuth handshake details', () {
+      final error = AuthException(
+        'Provider returned error: invalid_request',
+        code: 'some_oauth_code',
+      );
+
+      final message = oAuthErrorMessage(error);
+
+      expect(message, contains('Google'));
+      expect(message, isNot(contains('invalid_request')));
+      expect(message, isNot(contains('Provider')));
+    });
+  });
 }
