@@ -140,7 +140,7 @@ No se configura producción.
   que OAuth). El usuario recibe un correo con enlace de confirmación.
 - **Password recovery**: `resetPasswordForEmail` envía correo de recuperación
   con `redirectTo` apuntando a `_authRedirectTo`. El usuario retorna a Soma
-  con una sesión temporal de recovery (detectada por metadata `iss`).
+  con una sesión temporal de recovery (evento `AuthChangeEvent.passwordRecovery`).
 - **Email delivery**: actualmente usa el proveedor de email por defecto de
   Supabase (GoTrue SMTP interno). Limitaciones conocidas:
   - Rate limiting por defecto de Supabase Auth (no modificado).

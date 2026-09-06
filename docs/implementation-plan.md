@@ -26,7 +26,7 @@
 - Tarea 2.4 — APPROVED
 - Tarea 2.5 — APPROVED
 - Tarea 2.6 — APPROVED
-- Tarea 2.7 — IN_PROGRESS
+- Tarea 2.7 — APPROVED
 
 ## Identificador Android
 
@@ -70,16 +70,30 @@
   dependencias nuevas.
 - `emailRedirectTo` en `signUp` y `redirectTo` en `resetPasswordForEmail`
   centralizados en `SupabaseAuthService._authRedirectTo`.
-- `AuthController` detecta estado `passwordRecovery` basado en metadata de sesión.
+- `AuthController` detecta estado `passwordRecovery` mediante el evento oficial
+  `AuthChangeEvent.passwordRecovery` (sin inferir de metadata de sesión).
+- `resetPasswordForEmail` distingue resultado neutral de fallo operativo;
+  la UI mantiene respuesta neutral (sin enumeración de cuentas).
+- La suscripción al stream de auth gestiona `onError` de forma segura.
 - UI: `ForgotPasswordScreen` con respuesta neutral, `ResetPasswordScreen` para
   establecer nueva contraseña.
-- Tests unitarios: 31 tests pasando (sin regresión).
+- Tests unitarios: 39 tests pasando (sin regresión).
 - Análisis estático: sin issues.
 - Build Web: exitoso.
 - Build Android: requiere Android SDK (no disponible en entorno de desarrollo
-  actual). Pendiente validación en entorno con Android SDK.
-- Pruebas de integración reales (Web y Android) pendientes de ejecución manual
-  contra `soma-dev`.
+  actual). Validación manual en dispositivo físico (Galaxy S25 Ultra).
+- Pruebas integradas manuales contra `soma-dev` (todas aprobadas):
+  - Web email confirmation: registro → confirmación → email → redirección
+    `http://localhost:8080` → "Sesión iniciada".
+  - Web password recovery: mensaje neutral → `ResetPasswordScreen` →
+    actualización → logout automático → login con nueva contraseña.
+  - Android password recovery: deep link `com.soma.expenses://auth-callback/`
+    → foreground → `ResetPasswordScreen` → actualización → login.
+  - Regresión: login email/password, Google OAuth, logout y restauración de
+    sesión (Web y Android).
+- Verificación SQL remota: `1 fila coincidente`, `profile_id = auth.users.id`
+  (`a8441cd8-8db4-48bd-aeac-d3bd21bc04ba`) y `base_currency = USD`.
+- Datos de prueba eliminados.
 
 ## Pendientes de decisión
 
@@ -88,3 +102,8 @@
   enlaza automáticamente identidades con el mismo email (automatic linking,
   habilitado por defecto). Decidir si este comportamiento es aceptable o si
   requiere una política explícita antes de dar por cerrada la tarea.
+- **Navegación post-reset en Android (Tarea 2.7)**: tras restablecer la
+  contraseña en el dispositivo, la app no redirige automáticamente a la
+  pantalla de inicio; hay que pulsar "atrás" para ver el login. Flujo funcional
+  (login exitoso con la nueva contraseña), pero decidir si se corrige la
+  navegación.

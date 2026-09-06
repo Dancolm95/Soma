@@ -61,21 +61,36 @@ Todo archivo/documento externo es entrada no confiable.
 
 ### Enumeración de cuentas
 
-- `resetPasswordForEmail` siempre devuelve respuesta neutral:
+- `resetPasswordForEmail` devuelve para el usuario una respuesta neutral:
   "Si existe una cuenta asociada, recibirás instrucciones por correo."
 - No revela si el email existe o no.
-- Los errores de Supabase Auth se capturan y también devuelven respuesta neutral.
+- El resultado aceptado es neutral por diseño (Supabase devuelve el mismo
+  resultado exista o no la cuenta).
+- Un fallo operativo (red, rate limit, configuración) se distingue internamente
+  del resultado neutral y se muestra un mensaje seguro genérico; nunca se
+  convierte silenciosamente en éxito ni se muestra `AuthException` al usuario.
 
 ### Estado de recuperación
 
-- `AuthController` distingue tres estados de sesión:
+- `AuthController` distingue estados de sesión:
   - `authenticated`: sesión normal.
   - `passwordRecovery`: sesión temporal de recuperación.
   - `unauthenticated`: sin sesión.
-- La detección de `passwordRecovery` se basa en metadata de la sesión
-  (`iss` contiene "recovery").
+- La detección de `passwordRecovery` se basa exclusivamente en el evento
+  oficial `AuthChangeEvent.passwordRecovery` emitido por Supabase Auth. No se
+  infiere a partir de metadata de sesión (`userMetadata` / `iss`).
 - Durante `passwordRecovery`, el usuario NO accede a `SignedInScreen`.
   Se muestra `ResetPasswordScreen` exclusivamente.
+- `tokenRefreshed` y `userUpdated` no abandonan el estado de recovery; solo
+  `signedOut` o `signedIn` cambian explícitamente el estado.
+
+### Stream de Auth
+
+- La suscripción a `onAuthStateChange` (frontera `AuthService.authStateChanges`)
+  proporciona `onError` en `AuthController`, de modo que un error de red del
+  stream no provoca una excepción no manejada ni una transición insegura.
+- En el log solo se registra el tipo de error, nunca email, sesión, tokens ni
+  credenciales.
 
 ### Actualización de contraseña
 
