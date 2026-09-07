@@ -77,18 +77,23 @@
 - La suscripción al stream de auth gestiona `onError` de forma segura.
 - UI: `ForgotPasswordScreen` con respuesta neutral, `ResetPasswordScreen` para
   establecer nueva contraseña.
-- Tests unitarios: 39 tests pasando (sin regresión).
+- Tests unitarios: 43 tests pasando (sin regresión).
 - Análisis estático: sin issues.
 - Build Web: exitoso.
-- Build Android: requiere Android SDK (no disponible en entorno de desarrollo
-  actual). Validación manual en dispositivo físico (Galaxy S25 Ultra).
+- Build Android: exitoso (APK debug instalado y validado en Galaxy S25 Ultra).
+- Navegación de recovery derivada del estado de auth (sin pulsar "atrás"):
+  - `AuthController.updatePassword` cierra la sesión tras éxito, de modo que
+    `ResetPasswordScreen` se desmonta y AuthGate muestra el login.
+  - `ForgotPasswordScreen` se desapila automáticamente al llegar la sesión de
+    recovery (`passwordRecovery`), revelando `ResetPasswordScreen` sin "atrás".
 - Pruebas integradas manuales contra `soma-dev` (todas aprobadas):
   - Web email confirmation: registro → confirmación → email → redirección
     `http://localhost:8080` → "Sesión iniciada".
   - Web password recovery: mensaje neutral → `ResetPasswordScreen` →
     actualización → logout automático → login con nueva contraseña.
   - Android password recovery: deep link `com.soma.expenses://auth-callback/`
-    → foreground → `ResetPasswordScreen` → actualización → login.
+    → foreground → `ResetPasswordScreen` directo → actualización → login
+    automático sin pulsar "atrás".
   - Regresión: login email/password, Google OAuth, logout y restauración de
     sesión (Web y Android).
 - Verificación SQL remota: `1 fila coincidente`, `profile_id = auth.users.id`
@@ -102,8 +107,3 @@
   enlaza automáticamente identidades con el mismo email (automatic linking,
   habilitado por defecto). Decidir si este comportamiento es aceptable o si
   requiere una política explícita antes de dar por cerrada la tarea.
-- **Navegación post-reset en Android (Tarea 2.7)**: tras restablecer la
-  contraseña en el dispositivo, la app no redirige automáticamente a la
-  pantalla de inicio; hay que pulsar "atrás" para ver el login. Flujo funcional
-  (login exitoso con la nueva contraseña), pero decidir si se corrige la
-  navegación.
