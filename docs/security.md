@@ -24,7 +24,11 @@
 - confirmación humana;
 - rate limiting;
 - protección frente a abuso/coste;
-- persistencia de información FX histórica.
+- persistencia financiera futura con representación decimal exacta, no
+  floating point;
+- importes financieros con validación backend/database;
+- ningún LLM convierte moneda de forma autoritativa;
+- ninguna entrada externa cambia la semántica PEN del gasto.
 
 ## Principio
 
@@ -125,8 +129,10 @@ Primera frontera real de autorización implementada.
 - Sin políticas de INSERT ni DELETE para el cliente.
 - Privilegios de mínimo privilegio:
   - `anon`: sin acceso a `profiles`;
-  - `authenticated`: `SELECT` y `UPDATE` únicamente sobre `base_currency`.
-- `base_currency` restringida por CHECK a PEN/USD/EUR.
+  - `authenticated`: `SELECT` únicamente (Tarea 3.1 retiró `base_currency`
+    y con ella el grant `UPDATE`, al no quedar columnas actualizables por
+    el cliente).
+- Sin columna `base_currency` desde la migración PEN-only (Tarea 3.1).
 
 Garantías verificadas (pgTAP sobre autorización real):
 
@@ -135,4 +141,14 @@ Garantías verificadas (pgTAP sobre autorización real):
 - El cliente no puede crear un perfil adjudicándoselo a otro usuario.
 - El cliente no puede cambiar el `id` de su propio perfil.
 - El acceso anónimo no obtiene perfiles.
-- Moneda fuera de PEN/USD/EUR es rechazada por la base de datos.
+- `base_currency` ya no existe en `profiles` (PEN-only).
+
+## Modelo financiero PEN-only (Tarea 3.1, ADR-005)
+
+- Soma MVP persiste importes exclusivamente bajo semántica PEN.
+- Ningún LLM puede convertir moneda de forma autoritativa.
+- Ninguna entrada externa puede cambiar la semántica PEN del gasto.
+- La persistencia financiera futura debe usar representación decimal
+  exacta, no floating point.
+- Los importes financieros requieren validación backend/database.
+- `user_id` nunca será confiado desde entrada arbitraria del cliente.

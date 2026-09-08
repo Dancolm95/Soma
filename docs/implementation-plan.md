@@ -7,7 +7,7 @@
 
 - Fase 1 — Fundación y gobierno
 - Fase 2 — Supabase, identidad y aislamiento
-- Fase 3 — Núcleo financiero + FX
+- Fase 3 — Núcleo financiero
 - Fase 4 — Métricas
 - Fase 5 — IA texto
 - Fase 6 — Comprobantes/cámara
@@ -19,7 +19,7 @@
 - Tarea 1.1 — APPROVED
 - Tarea 1.2 — APPROVED
 - Tarea 1.3 — APPROVED
-- Fase 2 — IN_PROGRESS
+- Fase 2 — COMPLETED
 - Tarea 2.1 — APPROVED
 - Tarea 2.2 — APPROVED
 - Tarea 2.3 — APPROVED
@@ -27,6 +27,8 @@
 - Tarea 2.5 — APPROVED
 - Tarea 2.6 — APPROVED
 - Tarea 2.7 — APPROVED
+- Fase 3 — IN_PROGRESS
+- Tarea 3.1 — IN_PROGRESS
 
 ## Identificador Android
 
@@ -100,9 +102,20 @@
   (`a8441cd8-8db4-48bd-aeac-d3bd21bc04ba`) y `base_currency = USD`.
 - Datos de prueba eliminados.
 
+## Fase 3 — Núcleo financiero (PEN-only, ADR-005)
+
+- Tarea 3.1 — Alineación PEN-only y retirada de base_currency — IN_PROGRESS
+- Tarea 3.2 — Modelo de categorías + RLS — PENDING
+- Tarea 3.3 — Modelo de gastos + RLS — PENDING
+- Tarea 3.4 — CRUD de categorías — PENDING
+- Tarea 3.5 — CRUD de gastos — PENDING
+- Tarea 3.6 — Integración Flutter del núcleo financiero — PENDING
+- Tarea 3.7 — Pruebas adversariales y cierre — PENDING
+
 ## Pendientes de decisión
 
-- **Antes de implementar FX**: definir el comportamiento cuando el usuario cambia su moneda base.
+- ~~Antes de implementar FX~~ — eliminado por ADR-005 (PEN-only): no hay
+  FX, proveedor FX ni moneda base configurable en el MVP.
 - **Comportamiento "mismo email" en OAuth (Tarea 2.6)**: Supabase Auth
   enlaza automáticamente identidades con el mismo email (automatic linking,
   habilitado por defecto). Decidir si este comportamiento es aceptable o si

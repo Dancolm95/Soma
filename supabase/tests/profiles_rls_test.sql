@@ -1,11 +1,9 @@
 BEGIN;
-SELECT plan(14);
+SELECT plan(13);
 
 -- Two identities, owned by auth.users. Profiles are created by the trigger.
 INSERT INTO auth.users (id) VALUES ('00000000-0000-0000-0000-00000000000a');
 INSERT INTO auth.users (id) VALUES ('00000000-0000-0000-0000-00000000000b');
-UPDATE public.profiles SET base_currency = 'PEN'
-  WHERE id = '00000000-0000-0000-0000-00000000000a';
 
 SELECT ok(relrowsecurity, 'RLS is enabled on profiles')
   FROM pg_class
@@ -17,6 +15,28 @@ SELECT is(
                  '00000000-0000-0000-0000-00000000000b')),
   2,
   'trigger created one profile per user'
+);
+
+SELECT is(
+  (SELECT count(*)::int FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'profiles'
+      AND column_name = 'base_currency'),
+  0,
+  'base_currency column is absent (PEN-only)'
+);
+
+SELECT is(
+  (SELECT count(*)::int FROM pg_policies
+    WHERE schemaname = 'public' AND tablename = 'profiles'
+      AND policyname = 'profiles_update_own'),
+  0,
+  'profiles_update_own policy is removed'
+);
+
+SELECT is(
+  has_table_privilege('authenticated', 'public.profiles', 'UPDATE'),
+  false,
+  'authenticated has no UPDATE privilege on profiles'
 );
 
 -- User A
@@ -56,72 +76,17 @@ SELECT is(
   'B cannot read A profile'
 );
 
--- A updates own profile
-RESET ROLE;
-SET LOCAL ROLE authenticated;
-SELECT set_config(
-  'request.jwt.claims',
-  '{"sub":"00000000-0000-0000-0000-00000000000a","role":"authenticated"}',
-  true
-);
-UPDATE public.profiles SET base_currency = 'EUR'
-  WHERE id = '00000000-0000-0000-0000-00000000000a';
-RESET ROLE;
-SELECT is(
-  (SELECT base_currency FROM public.profiles WHERE id = '00000000-0000-0000-0000-00000000000a'),
-  'EUR',
-  'A can update own profile'
-);
-
--- A attempts to update B
-SET LOCAL ROLE authenticated;
-SELECT set_config(
-  'request.jwt.claims',
-  '{"sub":"00000000-0000-0000-0000-00000000000a","role":"authenticated"}',
-  true
-);
-UPDATE public.profiles SET base_currency = 'EUR'
-  WHERE id = '00000000-0000-0000-0000-00000000000b';
-RESET ROLE;
-SELECT is(
-  (SELECT base_currency FROM public.profiles WHERE id = '00000000-0000-0000-0000-00000000000b'),
-  'USD',
-  'A cannot update B profile'
-);
-
--- B updates own profile
-SET LOCAL ROLE authenticated;
-SELECT set_config(
-  'request.jwt.claims',
-  '{"sub":"00000000-0000-0000-0000-00000000000b","role":"authenticated"}',
-  true
-);
-UPDATE public.profiles SET base_currency = 'PEN'
-  WHERE id = '00000000-0000-0000-0000-00000000000b';
-RESET ROLE;
-SELECT is(
-  (SELECT base_currency FROM public.profiles WHERE id = '00000000-0000-0000-0000-00000000000b'),
-  'PEN',
-  'B can update own profile'
-);
-
--- B attempts to update A
-SET LOCAL ROLE authenticated;
-SELECT set_config(
-  'request.jwt.claims',
-  '{"sub":"00000000-0000-0000-0000-00000000000b","role":"authenticated"}',
-  true
-);
-UPDATE public.profiles SET base_currency = 'USD'
-  WHERE id = '00000000-0000-0000-0000-00000000000a';
-RESET ROLE;
-SELECT is(
-  (SELECT base_currency FROM public.profiles WHERE id = '00000000-0000-0000-0000-00000000000a'),
-  'EUR',
-  'B cannot update A profile'
+-- No client-updatable columns remain: any UPDATE is denied.
+SELECT throws_ok(
+  $$ UPDATE public.profiles SET updated_at = now()
+     WHERE id = '00000000-0000-0000-0000-00000000000b' $$,
+  '42501',
+  NULL,
+  'B cannot update own profile (SELECT-only)'
 );
 
 -- Anonymous access
+RESET ROLE;
 SET LOCAL ROLE anon;
 SELECT set_config('request.jwt.claims', '{}', true);
 SELECT throws_ok(
@@ -153,16 +118,6 @@ SELECT throws_ok(
   '42501',
   NULL,
   'A cannot change own profile id'
-);
-
--- Currency constraint
-RESET ROLE;
-SELECT throws_ok(
-  $$ UPDATE public.profiles SET base_currency = 'GBP'
-     WHERE id = '00000000-0000-0000-0000-00000000000a' $$,
-  '23514',
-  NULL,
-  'base_currency outside PEN/USD/EUR is rejected'
 );
 
 SELECT * FROM finish();

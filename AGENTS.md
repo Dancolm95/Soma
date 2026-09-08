@@ -3,7 +3,9 @@
 Proyecto: Soma — aplicación personal de gestión de gastos asistida por IA.
 
 Stack aprobado: Flutter/Dart (Web + Android), Supabase (PostgreSQL + Auth + RLS),
-Gemini 2.5 Flash, Frankfurter v2.
+Gemini 2.5 Flash.
+
+Soma MVP is PEN-only (ADR-005, supersedes ADR-004 for the MVP).
 
 ## Fuente de verdad
 
@@ -38,8 +40,6 @@ DETENERSE Y ESCALAR antes de cambiar:
 - modelo/semántica financiera;
 - Gemini;
 - ExpenseExtractor;
-- Frankfurter;
-- ExchangeRateProvider;
 - estrategia de comprobantes;
 - infraestructura;
 - dependencias significativas;
@@ -57,6 +57,17 @@ DETENERSE Y ESCALAR antes de cambiar:
 ## Contradicciones
 
 Si la documentación y la tarea parecen contradecirse: DETENERSE Y ESCALAR.
+
+## Modelo financiero
+
+Soma MVP is PEN-only.
+
+OpenCode MUST STOP and escalate before:
+
+- introducing another persisted currency;
+- implementing currency conversion;
+- adding an FX provider;
+- changing the PEN-only financial semantics.
 
 ## Código y comentarios
 

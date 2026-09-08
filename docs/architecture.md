@@ -41,19 +41,18 @@ La lógica de negocio no debe depender directamente de Gemini.
 
 Las llamadas IA son backend-only.
 
-## FX
+## Modelo financiero
 
-Contrato conceptual: `ExchangeRateProvider`.
+Soma MVP es PEN-only (ADR-005). Todos los gastos persistidos representan
+importes en PEN. No existe moneda base configurable, conversión FX,
+proveedor FX ni almacenamiento de tipos de cambio.
 
-Proveedor inicial: Frankfurter v2.
-
-Las conversiones utilizan tipos históricos.
-
-Persistir información suficiente para que las métricas históricas sean reproducibles.
+Referencia histórica: ADR-004 definió `ExchangeRateProvider`/Frankfurter v2
+antes de ser sustituido por ADR-005 para el MVP.
 
 ## Métricas
 
-PostgreSQL/backend.
+PostgreSQL/backend, exclusivamente en PEN.
 
 Nunca LLM como calculadora financiera autoritativa.
 
@@ -72,6 +71,5 @@ Flujo:
 - Flutter → backend
 - backend → PostgreSQL
 - backend → Gemini
-- backend → Frankfurter
 
 El cliente nunca es una frontera confiable para autorización.

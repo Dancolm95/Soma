@@ -54,7 +54,7 @@ La IA nunca confirma ni persiste automáticamente un gasto.
 ## Datos extraídos
 
 - monto;
-- moneda;
+- moneda detectada (informativa, sin conversión);
 - fecha;
 - comercio/concepto;
 - categoría.
@@ -70,18 +70,19 @@ El usuario puede consultar, editar y eliminar únicamente sus propios gastos.
 - La IA puede sugerir.
 - La IA no crea categorías automáticamente.
 
-## Monedas
+## Moneda
 
-Inicialmente:
-- PEN
-- USD
-- EUR
+Soma MVP usa exclusivamente PEN como semántica monetaria persistida.
 
-Cada usuario tiene moneda base configurable.
+No hay moneda base configurable.
+No hay conversión automática.
 
-Cada gasto conserva monto y moneda originales.
+Si texto/recibo/documento contiene otra moneda, el pipeline puede
+detectarla durante extracción/revisión, pero no debe realizar conversión
+FX.
 
-Las conversiones históricas utilizan la fecha del gasto.
+El importe confirmado por el usuario es el importe que se persiste
+como PEN.
 
 ## Métricas MVP
 
@@ -89,8 +90,9 @@ Las conversiones históricas utilizan la fecha del gasto.
 - gasto por categoría;
 - evolución mensual;
 - comparación con período anterior;
-- principales categorías/comercios;
-- distribución por moneda.
+- principales categorías/comercios.
+
+Las métricas son determinísticas y se calculan exclusivamente en PEN.
 
 Las métricas son determinísticas.
 
