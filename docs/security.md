@@ -143,6 +143,33 @@ Garantías verificadas (pgTAP sobre autorización real):
 - El acceso anónimo no obtiene perfiles.
 - `base_currency` ya no existe en `profiles` (PEN-only).
 
+## Frontera de autorización — categorías (Tarea 3.2)
+
+- Tabla `public.categories` con ownership por `user_id`: `NULL` = sistema,
+  `<usuario>` = privada (`user_id` → `auth.users.id` con `on delete cascade`).
+- RLS habilitado. Políticas separadas por operación (solo `authenticated`):
+  - SELECT: `user_id IS NULL OR user_id = auth.uid()`;
+  - INSERT: `WITH CHECK (user_id = auth.uid())` (el `DEFAULT auth.uid()`
+    no basta: el cliente puede enviar `user_id` explícito);
+  - UPDATE: `USING`/`WITH CHECK (user_id = auth.uid())`;
+  - DELETE: `USING (user_id = auth.uid())`.
+- Privilegios de mínimo privilegio:
+  - `anon`: sin acceso;
+  - `authenticated`: `SELECT`, `INSERT`, `DELETE` y `UPDATE(name)`
+    únicamente — `user_id`/`created_at`/`updated_at` nunca editables.
+- Nombre validado en DB (`btrim` 1–60) y unicidad lógica por ámbito
+  mediante índices de expresión (`lower(btrim(name))`, parciales por
+  `user_id IS NULL / IS NOT NULL`); sin extensiones nuevas.
+- Seed del sistema (8 filas `user_id IS NULL`) controlado por migración.
+
+Garantías verificadas (pgTAP sobre autorización real):
+
+- A lee sistema + propias; B igual; ni A ni B leen privadas ajenas.
+- A crea/renombra/elimina solo propias; no crea para B ni con `NULL`;
+  no transfiere (`→ B`, `→ NULL`) ni edita `user_id`.
+- Authenticated no modifica ni elimina categorías del sistema.
+- Anon sin acceso (SELECT/INSERT/UPDATE/DELETE denegados).
+
 ## Modelo financiero PEN-only (Tarea 3.1, ADR-005)
 
 - Soma MVP persiste importes exclusivamente bajo semántica PEN.

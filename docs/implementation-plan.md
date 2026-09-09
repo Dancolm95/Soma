@@ -28,7 +28,8 @@
 - Tarea 2.6 — APPROVED
 - Tarea 2.7 — APPROVED
 - Fase 3 — IN_PROGRESS
-- Tarea 3.1 — IN_PROGRESS
+- Tarea 3.1 — APPROVED
+- Tarea 3.2 — IN_PROGRESS
 
 ## Identificador Android
 
@@ -104,8 +105,8 @@
 
 ## Fase 3 — Núcleo financiero (PEN-only, ADR-005)
 
-- Tarea 3.1 — Alineación PEN-only y retirada de base_currency — IN_PROGRESS
-- Tarea 3.2 — Modelo de categorías + RLS — PENDING
+- Tarea 3.1 — Alineación PEN-only y retirada de base_currency — APPROVED
+- Tarea 3.2 — Modelo de categorías + RLS — IN_PROGRESS
 - Tarea 3.3 — Modelo de gastos + RLS — PENDING
 - Tarea 3.4 — CRUD de categorías — PENDING
 - Tarea 3.5 — CRUD de gastos — PENDING
