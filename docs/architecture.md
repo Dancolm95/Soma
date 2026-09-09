@@ -50,6 +50,31 @@ proveedor FX ni almacenamiento de tipos de cambio.
 Referencia histórica: ADR-004 definió `ExchangeRateProvider`/Frankfurter v2
 antes de ser sustituido por ADR-005 para el MVP.
 
+## Núcleo financiero (Tareas 3.2–3.3, PEN-only)
+
+- `public.categories`: `id uuid PK default gen_random_uuid()`; `user_id`
+  nullable (`NULL` = sistema, `<usuario>` → `auth.users` con
+  `on delete cascade`); `name` con unicidad lógica por ámbito; seed del
+  sistema (8 filas globales).
+- `public.expenses`: `id uuid PK default gen_random_uuid()`;
+  `user_id uuid NOT NULL default auth.uid()` → `auth.users`
+  con `on delete cascade`; `amount numeric(12,2) CHECK (> 0)`;
+  `expense_date date NOT NULL`; `merchant text` 1–120 tras `btrim`;
+  `category_id uuid NOT NULL` → `categories(id)` con `on delete restrict`;
+  `created_at/updated_at timestamptz`.
+- Invariante de categoría procedural en DB (alternativa B aprobada):
+  triggers `SECURITY INVOKER` sin privilegios elevados, UUID opacos.
+  `expenses_check_category_owner` (`BEFORE INSERT OR UPDATE OF
+  category_id, user_id` en `expenses`): acepta solo categoría global o
+  privada del mismo `user_id`, rechaza (`23503`); serializa por categoría
+  con advisory xact lock (`FOR SHARE` es inviable: `authenticated` no
+  tiene `UPDATE` en `categories` y bajo RLS no devuelve filas).
+  `categories_guard_expense_owner` (`BEFORE UPDATE OF user_id` en
+  `categories`): rechaza (`23503`) cualquier cambio que deje un gasto
+  existente inválido. `category_id → categories(id)` con
+  `on delete restrict` cubre existencia y borrado.
+- Sin columnas `currency`, FX ni recibos en el MVP.
+
 ## Métricas
 
 PostgreSQL/backend, exclusivamente en PEN.

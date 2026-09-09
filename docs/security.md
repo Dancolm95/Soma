@@ -170,6 +170,53 @@ Garantías verificadas (pgTAP sobre autorización real):
 - Authenticated no modifica ni elimina categorías del sistema.
 - Anon sin acceso (SELECT/INSERT/UPDATE/DELETE denegados).
 
+## Frontera de autorización — gastos (Tarea 3.3)
+
+- Tabla `public.expenses` con ownership estricto por `user_id`
+  (`NOT NULL DEFAULT auth.uid()` → `auth.users` con `on delete cascade`).
+- RLS habilitado. Políticas separadas por operación (solo `authenticated`):
+  - SELECT: `user_id = auth.uid()`;
+  - INSERT: `WITH CHECK (user_id = auth.uid())`;
+  - UPDATE: `USING`/`WITH CHECK (user_id = auth.uid())`;
+  - DELETE: `USING (user_id = auth.uid())`.
+- Invariante de categoría por triggers `SECURITY INVOKER`
+  (alternativa B): `expenses_check_category_owner` valida cada escritura
+  de gasto (global o privada propia; ajena/inexistente → `23503`);
+  corre como invocante bajo RLS verificado (global/propia OK, ajena
+  rechazada) con predicado explícito que también rige a roles que eluden
+  RLS. `categories_guard_expense_owner` bloquea (`23503`) retargets
+  (`A→B`, global→privada con gastos ajenos) y deja pasar renames.
+  Serialización por categoría con advisory xact lock (demostrada con
+  carrera viva: inserción concurrente vs retarget → espera + rechazo,
+  0 pares inválidos).   `EXECUTE` mínimo: las dos funciones validadoras no otorgan `EXECUTE`
+  a nadie (`PUBLIC`/`anon`/`authenticated`/`service_role` revocados;
+  solo el owner ejecuta vía trigger, que no exige el privilegio).
+  Flutter solo envía `category_id`; la sesión determina `user_id`.
+- `category_id NOT NULL` → `categories(id)` con `on delete restrict`:
+  eliminar una categoría en uso falla (`23503`); el gasto permanece.
+- Privilegios de mínimo privilegio:
+  - `anon`: sin acceso;
+  - `authenticated`: `SELECT`, `DELETE`, `INSERT(amount, expense_date,
+    merchant, category_id)` y `UPDATE(amount, expense_date, merchant,
+    category_id)` únicamente — `user_id`/`id`/`created_at`/`updated_at`
+    nunca editables por cliente.
+- Financiero: `amount numeric(12,2) CHECK (> 0)`; `merchant` 1–120 tras
+  `btrim`; `expense_date date` (fecha económica, no instante).
+- `updated_at` controlado por trigger (`expenses_touch_updated_at`);
+  sin grant de escritura para el cliente.
+
+Garantías verificadas (pgTAP sobre autorización real):
+
+- A crea/lee/edita/elimina solo propios (global + privada A);
+  B simétrico; ni A ni B leen/modifican/eliminan gastos ajenos.
+- Transferencia `A → B` rechazada; `UPDATE(user_id/id/created_at/
+  updated_at)` denegado (`42501`); `INSERT` con `user_id` explícito
+  denegado (`42501`).
+- `A + privada B` y `B + privada A` rechazados (`23514`).
+- Categoría en uso no eliminable; al eliminar usuario, sus gastos y
+  categorías privadas desaparecen, globales permanecen.
+- Anon sin acceso (SELECT/INSERT/UPDATE/DELETE denegados).
+
 ## Modelo financiero PEN-only (Tarea 3.1, ADR-005)
 
 - Soma MVP persiste importes exclusivamente bajo semántica PEN.
