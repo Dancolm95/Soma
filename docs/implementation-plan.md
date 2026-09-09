@@ -107,7 +107,8 @@
 
 - Tarea 3.1 — Alineación PEN-only y retirada de base_currency — APPROVED
 - Tarea 3.2 — Modelo de categorías + RLS — APPROVED
-- Tarea 3.3 — Modelo de gastos + RLS — IN_PROGRESS
+- Tarea 3.3 — Modelo de gastos + RLS — APPROVED + DEPLOYED DEV
+- Tarea 3.4 — CRUD de categorías — IN_PROGRESS
 - Tarea 3.4 — CRUD de categorías — PENDING
 - Tarea 3.5 — CRUD de gastos — PENDING
 - Tarea 3.6 — Integración Flutter del núcleo financiero — PENDING

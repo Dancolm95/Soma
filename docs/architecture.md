@@ -50,6 +50,17 @@ proveedor FX ni almacenamiento de tipos de cambio.
 Referencia histórica: ADR-004 definió `ExchangeRateProvider`/Frankfurter v2
 antes de ser sustituido por ADR-005 para el MVP.
 
+## CRUD de categorías (Tarea 3.4)
+
+Contrato de aplicación sin tipos Supabase en la frontera:
+`Category` (`id`, `name`, `userId?`, `isSystem = userId == null`),
+`CategoryRepository` (`list/create/rename/delete`) y `CategoryError`
+(`invalidName`, `duplicateName`, `categoryInUse`, `forbidden`,
+`unexpected`) con mensajes seguros. Solo `name` viaja en escrituras;
+`user_id` lo deriva la sesión. Implementación PostgREST
+(`SupabaseCategoryStore` + `SupabaseCategoryRepository`) con RLS como
+frontera y guardas de sistema en aplicación.
+
 ## Núcleo financiero (Tareas 3.2–3.3, PEN-only)
 
 - `public.categories`: `id uuid PK default gen_random_uuid()`; `user_id`
