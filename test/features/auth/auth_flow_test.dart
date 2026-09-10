@@ -5,6 +5,10 @@ import 'package:soma_app/application/auth/auth_controller.dart';
 import 'package:soma_app/application/auth/auth_service.dart';
 
 import '../../helpers/fake_auth_service.dart';
+import '../../helpers/fake_repositories.dart';
+
+import 'package:soma_app/presentation/categories/categories_controller.dart';
+import 'package:soma_app/presentation/expenses/expenses_controller.dart';
 
 void main() {
   Future<AuthController> pumpApp(
@@ -14,7 +18,17 @@ void main() {
     final controller = AuthController(service);
     addTearDown(controller.dispose);
     addTearDown(service.dispose);
-    await tester.pumpWidget(SomaApp(authController: controller));
+    final expenses = ExpensesController(FakeExpenseRepository());
+    addTearDown(expenses.dispose);
+    final categories = CategoriesController(FakeCategoryRepository());
+    addTearDown(categories.dispose);
+    await tester.pumpWidget(
+      SomaApp(
+        authController: controller,
+        expensesController: expenses,
+        categoriesController: categories,
+      ),
+    );
     return controller;
   }
 
@@ -60,8 +74,7 @@ void main() {
       await tester.tap(find.text('Entrar'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Sesión iniciada'), findsOneWidget);
-      expect(find.text('user@example.com'), findsOneWidget);
+      expect(find.text('Gastos'), findsOneWidget);
     });
 
     testWidgets('logout removes access to the authenticated screen', (
@@ -71,14 +84,15 @@ void main() {
       await pumpApp(tester, service);
       service.emit(const SessionUser(email: 'user@example.com'));
       await tester.pump();
+      await tester.pump();
 
-      expect(find.text('Sesión iniciada'), findsOneWidget);
+      expect(find.text('Gastos'), findsOneWidget);
 
-      await tester.tap(find.text('Cerrar sesión'));
+      await tester.tap(find.byTooltip('Cerrar sesión'));
       await tester.pumpAndSettle();
 
       expect(service.signOutCalled, isTrue);
-      expect(find.text('Sesión iniciada'), findsNothing);
+      expect(find.text('Gastos'), findsNothing);
       expect(find.text('Entrar'), findsOneWidget);
     });
 
@@ -118,7 +132,7 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.textContaining('confirma tu cuenta'), findsOneWidget);
-        expect(find.text('Sesión iniciada'), findsNothing);
+        expect(find.text('Gastos'), findsNothing);
       },
     );
 
@@ -143,7 +157,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Continuar con Google'), findsOneWidget);
-      expect(find.text('Sesión iniciada'), findsNothing);
+      expect(find.text('Gastos'), findsNothing);
     });
 
     testWidgets('presents Google OAuth errors safely', (tester) async {
@@ -175,7 +189,17 @@ void main() {
         final controller = AuthController(service);
         addTearDown(controller.dispose);
         addTearDown(service.dispose);
-        await tester.pumpWidget(SomaApp(authController: controller));
+        final expenses = ExpensesController(FakeExpenseRepository());
+        addTearDown(expenses.dispose);
+        final categories = CategoriesController(FakeCategoryRepository());
+        addTearDown(categories.dispose);
+        await tester.pumpWidget(
+          SomaApp(
+            authController: controller,
+            expensesController: expenses,
+            categoriesController: categories,
+          ),
+        );
 
         service.emitPasswordRecovery(
           const SessionUser(email: 'user@example.com'),
@@ -211,7 +235,17 @@ void main() {
       final controller = AuthController(service);
       addTearDown(controller.dispose);
       addTearDown(service.dispose);
-      await tester.pumpWidget(SomaApp(authController: controller));
+      final recoveryExpenses = ExpensesController(FakeExpenseRepository());
+      addTearDown(recoveryExpenses.dispose);
+      final recoveryCategories = CategoriesController(FakeCategoryRepository());
+      addTearDown(recoveryCategories.dispose);
+      await tester.pumpWidget(
+        SomaApp(
+          authController: controller,
+          expensesController: recoveryExpenses,
+          categoriesController: recoveryCategories,
+        ),
+      );
 
       service.emit(null);
       await tester.pumpAndSettle();

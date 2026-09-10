@@ -6,6 +6,12 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:soma_app/application/app.dart';
 import 'package:soma_app/application/auth/auth_controller.dart';
 import 'package:soma_app/infrastructure/auth/supabase_auth_service.dart';
+import 'package:soma_app/infrastructure/categories/supabase_category_repository.dart';
+import 'package:soma_app/infrastructure/categories/supabase_category_store.dart';
+import 'package:soma_app/infrastructure/expenses/supabase_expense_repository.dart';
+import 'package:soma_app/infrastructure/expenses/supabase_expense_store.dart';
+import 'package:soma_app/presentation/categories/categories_controller.dart';
+import 'package:soma_app/presentation/expenses/expenses_controller.dart';
 import 'package:soma_app/main.dart' as app;
 
 void main() {
@@ -50,25 +56,37 @@ void main() {
     await tester.pumpAndSettle();
     await enterCredentials(tester, email: email, password: password);
     await tester.tap(find.text('Registrarse'));
-    await waitFor(tester, find.text('Sesión iniciada'));
-    expect(find.text(email), findsOneWidget);
+    await waitFor(tester, find.text('Gastos'));
 
-    await tester.tap(find.text('Cerrar sesión'));
+    await tester.tap(find.byTooltip('Cerrar sesión'));
     await waitFor(tester, find.text('Inicia sesión'));
 
     await enterCredentials(tester, email: email, password: password);
     await tester.tap(find.text('Entrar'));
-    await waitFor(tester, find.text('Sesión iniciada'));
-    expect(find.text(email), findsOneWidget);
+    await waitFor(tester, find.text('Gastos'));
 
     await tester.pumpWidget(const SizedBox.shrink());
     final restoredController = AuthController(
       SupabaseAuthService(Supabase.instance.client),
     );
-    await tester.pumpWidget(SomaApp(authController: restoredController));
-    await waitFor(tester, find.text('Sesión iniciada'));
-    expect(find.text(email), findsOneWidget);
+    final client = Supabase.instance.client;
+    final restoredExpenses = ExpensesController(
+      SupabaseExpenseRepository(SupabaseExpenseStore(client)),
+    );
+    final restoredCategories = CategoriesController(
+      SupabaseCategoryRepository(SupabaseCategoryStore(client)),
+    );
+    await tester.pumpWidget(
+      SomaApp(
+        authController: restoredController,
+        expensesController: restoredExpenses,
+        categoriesController: restoredCategories,
+      ),
+    );
+    await waitFor(tester, find.text('Gastos'));
 
     restoredController.dispose();
+    restoredExpenses.dispose();
+    restoredCategories.dispose();
   });
 }
