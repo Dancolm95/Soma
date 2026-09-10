@@ -86,6 +86,34 @@ frontera y guardas de sistema en aplicación.
   `on delete restrict` cubre existencia y borrado.
 - Sin columnas `currency`, FX ni recibos en el MVP.
 
+## CRUD de gastos (Tarea 3.5)
+
+Contrato de aplicación sin tipos Supabase en la frontera:
+`Expense` (`id`, `amountMinor` en céntimos, `expenseDate`, `merchant`,
+`categoryId`, `createdAt`, `updatedAt`), `ExpenseRepository`
+(`list/create/update/delete`) y `ExpenseError` (`invalidAmount`,
+`invalidMerchant`, `invalidDate`, `invalidCategory`, `forbidden`,
+`notFound`, `unexpected`) con mensajes seguros. Importe exacto sin
+`double` ni dependencias: entero de unidades menores en dominio,
+cadena `numeric(12,2)` (`1`–`999999999999` céntimos) hacia la DB, con
+parseo exacto de vuelta. Solo `amount/expense_date/merchant/category_id`
+viajan en escrituras; `user_id` lo deriva la sesión. Implementación
+PostgREST (`SupabaseExpenseStore` delgado + `SupabaseExpenseRepository`
+que valida, convierte, mapea y verifica 0 filas en update/delete como
+`notFound` sin revelar propiedad ajena) con RLS como frontera.
+
+## Presentación del núcleo financiero (Tarea 3.6)
+
+Composición en `main.dart` (sin service locator nuevo): Supabase client
+único → stores → `SupabaseExpenseRepository`/`SupabaseCategoryRepository`
+→ `ExpensesController`/`CategoriesController` (`ChangeNotifier`, ya usado
+por `AuthController`) → `SomaApp`/`AuthGate` → `ExpensesPage`
+(`Gastos`, home autenticado) y `CategoriesPage`. Sin dependencias de
+state management ni UI nuevas; widgets nunca llaman a Supabase
+directamente. Importe exacto sin `double`: `tryParseAmountMinor`
+(acepta `19.90`/`19,90`, máximo 2 decimales) y `formatPen` (`S/ 19.90`)
+con aritmética entera sobre `amountMinor`.
+
 ## Métricas
 
 PostgreSQL/backend, exclusivamente en PEN.
