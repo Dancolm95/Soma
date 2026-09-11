@@ -7,9 +7,6 @@ import 'package:soma_app/application/auth/auth_service.dart';
 import '../../helpers/fake_auth_service.dart';
 import '../../helpers/fake_repositories.dart';
 
-import 'package:soma_app/presentation/categories/categories_controller.dart';
-import 'package:soma_app/presentation/expenses/expenses_controller.dart';
-
 void main() {
   Future<AuthController> pumpApp(
     WidgetTester tester,
@@ -18,15 +15,11 @@ void main() {
     final controller = AuthController(service);
     addTearDown(controller.dispose);
     addTearDown(service.dispose);
-    final expenses = ExpensesController(FakeExpenseRepository());
-    addTearDown(expenses.dispose);
-    final categories = CategoriesController(FakeCategoryRepository());
-    addTearDown(categories.dispose);
     await tester.pumpWidget(
       SomaApp(
         authController: controller,
-        expensesController: expenses,
-        categoriesController: categories,
+        expenseRepository: FakeExpenseRepository(),
+        categoryRepository: FakeCategoryRepository(),
       ),
     );
     return controller;
@@ -67,7 +60,7 @@ void main() {
       await tester.pump();
 
       service.nextSignInResult = const AuthSuccess(
-        user: SessionUser(email: 'user@example.com'),
+        user: SessionUser(id: 'user-1', email: 'user@example.com'),
       );
 
       await enterCredentials(tester);
@@ -82,7 +75,7 @@ void main() {
     ) async {
       final service = FakeAuthService();
       await pumpApp(tester, service);
-      service.emit(const SessionUser(email: 'user@example.com'));
+      service.emit(const SessionUser(id: 'user-1', email: 'user@example.com'));
       await tester.pump();
       await tester.pump();
 
@@ -189,20 +182,16 @@ void main() {
         final controller = AuthController(service);
         addTearDown(controller.dispose);
         addTearDown(service.dispose);
-        final expenses = ExpensesController(FakeExpenseRepository());
-        addTearDown(expenses.dispose);
-        final categories = CategoriesController(FakeCategoryRepository());
-        addTearDown(categories.dispose);
         await tester.pumpWidget(
           SomaApp(
             authController: controller,
-            expensesController: expenses,
-            categoriesController: categories,
+            expenseRepository: FakeExpenseRepository(),
+            categoryRepository: FakeCategoryRepository(),
           ),
         );
 
         service.emitPasswordRecovery(
-          const SessionUser(email: 'user@example.com'),
+          const SessionUser(id: 'user-1', email: 'user@example.com'),
         );
         await tester.pumpAndSettle();
 
@@ -235,15 +224,11 @@ void main() {
       final controller = AuthController(service);
       addTearDown(controller.dispose);
       addTearDown(service.dispose);
-      final recoveryExpenses = ExpensesController(FakeExpenseRepository());
-      addTearDown(recoveryExpenses.dispose);
-      final recoveryCategories = CategoriesController(FakeCategoryRepository());
-      addTearDown(recoveryCategories.dispose);
       await tester.pumpWidget(
         SomaApp(
           authController: controller,
-          expensesController: recoveryExpenses,
-          categoriesController: recoveryCategories,
+          expenseRepository: FakeExpenseRepository(),
+          categoryRepository: FakeCategoryRepository(),
         ),
       );
 
@@ -256,7 +241,7 @@ void main() {
       expect(find.text('Recuperar contraseña'), findsOneWidget);
 
       service.emitPasswordRecovery(
-        const SessionUser(email: 'user@example.com'),
+        const SessionUser(id: 'user-1', email: 'user@example.com'),
       );
       await tester.pumpAndSettle();
 

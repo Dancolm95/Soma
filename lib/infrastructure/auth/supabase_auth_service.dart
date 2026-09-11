@@ -129,7 +129,8 @@ class SupabaseAuthService implements AuthService {
   @override
   Future<void> signOut() => _auth.signOut();
 
-  SessionUser _toSessionUser(User user) => SessionUser(email: user.email);
+  SessionUser _toSessionUser(User user) =>
+      SessionUser(id: user.id, email: user.email);
 
   AuthEvent _toAuthEvent(AuthChangeEvent event) {
     switch (event) {

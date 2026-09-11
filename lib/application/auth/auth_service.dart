@@ -6,11 +6,13 @@ const kMinPasswordLength = 6;
 
 /// Minimal authenticated identity exposed to the application.
 ///
-/// Only the fields the UI actually needs are exposed. Tokens and internal
-/// session data are intentionally not part of this type.
+/// [id] is the canonical Supabase `auth.users` UUID and the only identity
+/// suitable for scoping session state. [email] remains for display only.
+/// Tokens and internal session data are intentionally not part of this type.
 class SessionUser {
-  const SessionUser({required this.email});
+  const SessionUser({required this.id, required this.email});
 
+  final String id;
   final String? email;
 }
 

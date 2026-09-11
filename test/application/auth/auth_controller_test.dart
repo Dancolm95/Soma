@@ -32,7 +32,7 @@ void main() {
       final service = FakeAuthService();
       final controller = AuthController(service);
 
-      service.emit(const SessionUser(email: 'a@b.com'));
+      service.emit(const SessionUser(id: 'user-1', email: 'a@b.com'));
 
       expect(controller.status, AuthStatus.authenticated);
       expect(controller.user?.email, 'a@b.com');
@@ -44,7 +44,7 @@ void main() {
       final service = FakeAuthService();
       final controller = AuthController(service);
 
-      service.emit(const SessionUser(email: 'a@b.com'));
+      service.emit(const SessionUser(id: 'user-1', email: 'a@b.com'));
       service.emit(null);
 
       expect(controller.status, AuthStatus.unauthenticated);

@@ -25,7 +25,7 @@ void main() {
 
     test('passwordRecovery event produces AuthStatus.passwordRecovery', () {
       authService.emitPasswordRecovery(
-        const SessionUser(email: 'test@example.com'),
+        const SessionUser(id: 'user-1', email: 'test@example.com'),
       );
 
       expect(controller.status, AuthStatus.passwordRecovery);
@@ -33,7 +33,9 @@ void main() {
     });
 
     test('signedIn event produces AuthStatus.authenticated', () {
-      authService.emit(const SessionUser(email: 'test@example.com'));
+      authService.emit(
+        const SessionUser(id: 'user-1', email: 'test@example.com'),
+      );
 
       expect(controller.status, AuthStatus.authenticated);
     });
@@ -46,7 +48,7 @@ void main() {
 
     test('initialSession with a user is restored as authenticated', () {
       authService.emitInitialSession(
-        const SessionUser(email: 'test@example.com'),
+        const SessionUser(id: 'user-1', email: 'test@example.com'),
       );
 
       expect(controller.status, AuthStatus.authenticated);
@@ -60,7 +62,9 @@ void main() {
 
     test('a normal session is not treated as recovery (no metadata used)', () {
       // A signed-in session with a user must never enter the recovery flow.
-      authService.emit(const SessionUser(email: 'test@example.com'));
+      authService.emit(
+        const SessionUser(id: 'user-1', email: 'test@example.com'),
+      );
 
       expect(controller.status, AuthStatus.authenticated);
       expect(controller.status, isNot(AuthStatus.passwordRecovery));
@@ -68,9 +72,11 @@ void main() {
 
     test('userUpdated during recovery does not leave the recovery flow', () {
       authService.emitPasswordRecovery(
-        const SessionUser(email: 'test@example.com'),
+        const SessionUser(id: 'user-1', email: 'test@example.com'),
       );
-      authService.emitUserUpdated(const SessionUser(email: 'test@example.com'));
+      authService.emitUserUpdated(
+        const SessionUser(id: 'user-1', email: 'test@example.com'),
+      );
 
       expect(controller.status, AuthStatus.passwordRecovery);
     });
@@ -96,7 +102,7 @@ void main() {
       'successful update closes the session and becomes unauthenticated',
       () async {
         authService.emitPasswordRecovery(
-          const SessionUser(email: 'test@example.com'),
+          const SessionUser(id: 'user-1', email: 'test@example.com'),
         );
         expect(controller.status, AuthStatus.passwordRecovery);
 
@@ -112,7 +118,7 @@ void main() {
 
     test('failed update keeps the recovery session open', () async {
       authService.emitPasswordRecovery(
-        const SessionUser(email: 'test@example.com'),
+        const SessionUser(id: 'user-1', email: 'test@example.com'),
       );
 
       authService.nextUpdatePasswordResult = const PasswordUpdateFailure(
@@ -127,7 +133,9 @@ void main() {
     });
 
     test('an error on the auth stream does not crash or change state', () {
-      authService.emit(const SessionUser(email: 'test@example.com'));
+      authService.emit(
+        const SessionUser(id: 'user-1', email: 'test@example.com'),
+      );
       expect(controller.status, AuthStatus.authenticated);
 
       authService.emitError(StateError('network down'));

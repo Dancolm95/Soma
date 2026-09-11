@@ -10,8 +10,6 @@ import 'package:soma_app/infrastructure/categories/supabase_category_store.dart'
 import 'package:soma_app/infrastructure/expenses/supabase_expense_repository.dart';
 import 'package:soma_app/infrastructure/expenses/supabase_expense_store.dart';
 import 'package:soma_app/infrastructure/supabase/supabase_initializer.dart';
-import 'package:soma_app/presentation/categories/categories_controller.dart';
-import 'package:soma_app/presentation/expenses/expenses_controller.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,18 +26,16 @@ void main() async {
           : config.supabaseRedirectUrl,
     ),
   );
-  final expensesController = ExpensesController(
-    SupabaseExpenseRepository(SupabaseExpenseStore(client)),
-  );
-  final categoriesController = CategoriesController(
-    SupabaseCategoryRepository(SupabaseCategoryStore(client)),
-  );
 
   runApp(
     SomaApp(
       authController: authController,
-      expensesController: expensesController,
-      categoriesController: categoriesController,
+      expenseRepository: SupabaseExpenseRepository(
+        SupabaseExpenseStore(client),
+      ),
+      categoryRepository: SupabaseCategoryRepository(
+        SupabaseCategoryStore(client),
+      ),
     ),
   );
 }

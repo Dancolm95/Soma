@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 
 import 'package:soma_app/application/auth/auth_controller.dart';
+import 'package:soma_app/application/categories/category_repository.dart';
+import 'package:soma_app/application/expenses/expense_repository.dart';
 import 'package:soma_app/features/auth/auth_screen.dart';
 import 'package:soma_app/features/auth/reset_password_screen.dart';
-import 'package:soma_app/presentation/categories/categories_controller.dart';
-import 'package:soma_app/presentation/expenses/expenses_controller.dart';
-import 'package:soma_app/presentation/expenses/expenses_page.dart';
+import 'package:soma_app/features/auth/session_scope.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({
     super.key,
     required this.authController,
-    required this.expensesController,
-    required this.categoriesController,
+    required this.expenseRepository,
+    required this.categoryRepository,
   });
 
   final AuthController authController;
-  final ExpensesController expensesController;
-  final CategoriesController categoriesController;
+  final ExpenseRepository expenseRepository;
+  final CategoryRepository categoryRepository;
 
   @override
   Widget build(BuildContext context) {
@@ -34,10 +34,11 @@ class AuthGate extends StatelessWidget {
           AuthStatus.passwordRecovery => ResetPasswordScreen(
             authController: authController,
           ),
-          AuthStatus.authenticated => ExpensesPage(
-            expensesController: expensesController,
-            categoriesController: categoriesController,
+          AuthStatus.authenticated => SessionScope(
+            key: ValueKey(authController.user?.id ?? 'anonymous'),
             authController: authController,
+            expenseRepository: expenseRepository,
+            categoryRepository: categoryRepository,
           ),
         };
       },

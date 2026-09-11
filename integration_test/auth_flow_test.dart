@@ -10,8 +10,6 @@ import 'package:soma_app/infrastructure/categories/supabase_category_repository.
 import 'package:soma_app/infrastructure/categories/supabase_category_store.dart';
 import 'package:soma_app/infrastructure/expenses/supabase_expense_repository.dart';
 import 'package:soma_app/infrastructure/expenses/supabase_expense_store.dart';
-import 'package:soma_app/presentation/categories/categories_controller.dart';
-import 'package:soma_app/presentation/expenses/expenses_controller.dart';
 import 'package:soma_app/main.dart' as app;
 
 void main() {
@@ -70,23 +68,19 @@ void main() {
       SupabaseAuthService(Supabase.instance.client),
     );
     final client = Supabase.instance.client;
-    final restoredExpenses = ExpensesController(
-      SupabaseExpenseRepository(SupabaseExpenseStore(client)),
-    );
-    final restoredCategories = CategoriesController(
-      SupabaseCategoryRepository(SupabaseCategoryStore(client)),
-    );
     await tester.pumpWidget(
       SomaApp(
         authController: restoredController,
-        expensesController: restoredExpenses,
-        categoriesController: restoredCategories,
+        expenseRepository: SupabaseExpenseRepository(
+          SupabaseExpenseStore(client),
+        ),
+        categoryRepository: SupabaseCategoryRepository(
+          SupabaseCategoryStore(client),
+        ),
       ),
     );
     await waitFor(tester, find.text('Gastos'));
 
     restoredController.dispose();
-    restoredExpenses.dispose();
-    restoredCategories.dispose();
   });
 }
