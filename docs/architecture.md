@@ -130,6 +130,17 @@ con RLS como segunda defensa; grants mínimos (solo `authenticated`
 ejecuta). `MetricsRepository` (Flutter) será consumidor futuro; Tarea 4.1
 no implementa UI, modelos Dart de métricas ni repositorio.
 
+### Distribución y Top 5 (Tarea 4.2)
+
+Tres RPC pequeñas bajo el mismo patrón (`SECURITY INVOKER`, mes como
+entrada, `expense_date`, `numeric` exacto):
+`expenses_spending_by_category` (agrupado por `category_id`, nombre vía
+JOIN), `expenses_top_categories` (reutiliza la agrupación anterior +
+`LIMIT 5`) y `expenses_top_merchants` (agrupado por el valor exacto de
+`merchant`, sin normalización). Orden determinista (`total DESC`,
+nombre/`merchant ASC`, `id` como último criterio). Sin vistas,
+materialized views, caché ni normalización de merchants en Fase 4.
+
 ## Comprobantes
 
 Procesamiento efímero.

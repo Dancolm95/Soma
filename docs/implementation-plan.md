@@ -36,8 +36,9 @@
 - Tarea 3.6 — APPROVED
 - Tarea 3.7 — APPROVED WITH OBSERVATIONS
 - Fase 4 — IN_PROGRESS
-- Tarea 4.1 — Contratos SQL y resumen mensual — IN_PROGRESS
-- Tarea 4.2 — PENDING (no iniciar)
+- Tarea 4.1 — Contratos SQL y resumen mensual — APPROVED + DEPLOYED DEV
+- Tarea 4.2 — Distribución por categorías y Top 5 — IN_PROGRESS
+- Tarea 4.3 — PENDING (no iniciar)
 
 ## Identificador Android
 
@@ -123,10 +124,13 @@
 
 ## Fase 4 — Métricas (PEN-only)
 
-- Tarea 4.1 — Contratos SQL y resumen mensual — IN_PROGRESS
+- Tarea 4.1 — Contratos SQL y resumen mensual — APPROVED + DEPLOYED DEV
   (RPC `public.expenses_monthly_total(p_month date)`; sin UI ni
   MetricsRepository Flutter)
-- Tarea 4.2 — PENDING (no iniciar)
+- Tarea 4.2 — Distribución por categorías y Top 5 — IN_PROGRESS
+  (RPC `expenses_spending_by_category` / `expenses_top_categories` /
+  `expenses_top_merchants`; sin UI ni MetricsRepository Flutter)
+- Tarea 4.3 — PENDING (no iniciar)
 
 ## Pendientes de decisión
 

@@ -231,6 +231,17 @@ un agregado entre usuarios se considera fuga de datos.
 - El período lo deriva PostgreSQL sobre `expense_date`; el cliente no
   puede solicitar rangos arbitrarios.
 
+## Frontera de autorización — métricas (Tarea 4.2)
+
+Mismo patrón que 4.1 para `expenses_spending_by_category`,
+`expenses_top_categories` y `expenses_top_merchants` (INVOKER,
+`auth.uid()`, fail-closed `42501`, grants mínimos por función).
+
+Consideración nueva: el nombre de categoría se obtiene con JOIN bajo
+`SECURITY INVOKER`, amparado por la policy SELECT existente de
+`categories` (global o propia); no se usa `DEFINER` para facilitar el
+JOIN y el invariante de ownership categoría-gasto no se debilita.
+
 ## Modelo financiero PEN-only (Tarea 3.1, ADR-005)
 
 - Soma MVP persiste importes exclusivamente bajo semántica PEN.
