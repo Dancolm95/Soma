@@ -29,7 +29,7 @@
 - Tarea 2.7 — APPROVED
 - Fase 3 — IN_PROGRESS
 - Tarea 3.1 — APPROVED
-- Tarea 3.2 — IN_PROGRESS
+- Tarea 3.2 — APPROVED + DEPLOYED DEV
 
 ## Identificador Android
 
@@ -110,8 +110,8 @@
 - Tarea 3.3 — Modelo de gastos + RLS — APPROVED + DEPLOYED DEV
 - Tarea 3.4 — CRUD de categorías — APPROVED WITH OBSERVATIONS
 - Tarea 3.5 — CRUD de gastos — APPROVED WITH OBSERVATIONS
-- Tarea 3.6 — Integración Flutter del núcleo financiero — IN_PROGRESS
-- Tarea 3.7 — Pruebas adversariales y cierre — PENDING
+- Tarea 3.6 — Integración Flutter del núcleo financiero — APPROVED
+- Tarea 3.7 — Pruebas adversariales y cierre — IN_PROGRESS
 
 ## Pendientes de decisión
 

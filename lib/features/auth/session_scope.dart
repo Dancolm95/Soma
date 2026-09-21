@@ -12,7 +12,7 @@ import 'package:soma_app/presentation/expenses/expenses_page.dart';
 /// A new [SessionScope] state (and therefore brand-new financial
 /// controllers starting empty) is created every time the surrounding
 /// [Key] changes. [AuthGate] keys this subtree by the authenticated
-/// user's email, so controllers never survive an identity change:
+/// user's id, so controllers never survive an identity change:
 /// the previous session's expenses, private categories, errors and
 /// submission states are disposed with the old state before the new
 /// session renders anything.
