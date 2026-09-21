@@ -27,9 +27,17 @@
 - Tarea 2.5 — APPROVED
 - Tarea 2.6 — APPROVED
 - Tarea 2.7 — APPROVED
-- Fase 3 — IN_PROGRESS
+- Fase 3 — COMPLETED
 - Tarea 3.1 — APPROVED
 - Tarea 3.2 — APPROVED + DEPLOYED DEV
+- Tarea 3.3 — APPROVED + DEPLOYED DEV
+- Tarea 3.4 — APPROVED WITH OBSERVATIONS
+- Tarea 3.5 — APPROVED WITH OBSERVATIONS
+- Tarea 3.6 — APPROVED
+- Tarea 3.7 — APPROVED WITH OBSERVATIONS
+- Fase 4 — IN_PROGRESS
+- Tarea 4.1 — Contratos SQL y resumen mensual — IN_PROGRESS
+- Tarea 4.2 — PENDING (no iniciar)
 
 ## Identificador Android
 
@@ -111,7 +119,14 @@
 - Tarea 3.4 — CRUD de categorías — APPROVED WITH OBSERVATIONS
 - Tarea 3.5 — CRUD de gastos — APPROVED WITH OBSERVATIONS
 - Tarea 3.6 — Integración Flutter del núcleo financiero — APPROVED
-- Tarea 3.7 — Pruebas adversariales y cierre — IN_PROGRESS
+- Tarea 3.7 — Pruebas adversariales y cierre — APPROVED WITH OBSERVATIONS
+
+## Fase 4 — Métricas (PEN-only)
+
+- Tarea 4.1 — Contratos SQL y resumen mensual — IN_PROGRESS
+  (RPC `public.expenses_monthly_total(p_month date)`; sin UI ni
+  MetricsRepository Flutter)
+- Tarea 4.2 — PENDING (no iniciar)
 
 ## Pendientes de decisión
 

@@ -217,6 +217,20 @@ Garantías verificadas (pgTAP sobre autorización real):
   categorías privadas desaparecen, globales permanecen.
 - Anon sin acceso (SELECT/INSERT/UPDATE/DELETE denegados).
 
+## Frontera de autorización — métricas (Tarea 4.1)
+
+Las agregaciones también están sujetas a aislamiento entre usuarios;
+un agregado entre usuarios se considera fuga de datos.
+
+- `public.expenses_monthly_total(p_month date)` es `SECURITY INVOKER`
+  (nunca `DEFINER`), con identidad exclusivamente desde `auth.uid()` y
+  RLS como segunda defensa. Sin identidad autenticada falla cerrado
+  (`42501`): nunca devuelve un total global ni cruzado.
+- Grants mínimos: `PUBLIC` y `anon` sin `EXECUTE`; solo `authenticated`
+  ejecuta. Sin `service_role` nuevo, sin `user_id` como parámetro.
+- El período lo deriva PostgreSQL sobre `expense_date`; el cliente no
+  puede solicitar rangos arbitrarios.
+
 ## Modelo financiero PEN-only (Tarea 3.1, ADR-005)
 
 - Soma MVP persiste importes exclusivamente bajo semántica PEN.

@@ -120,6 +120,16 @@ PostgreSQL/backend, exclusivamente en PEN.
 
 Nunca LLM como calculadora financiera autoritativa.
 
+### Resumen mensual (Tarea 4.1)
+
+Métricas deterministas en PostgreSQL vía RPC `SECURITY INVOKER`
+(`public.expenses_monthly_total(p_month date)`): el cliente envía solo el
+mes, PostgreSQL lo canonicaliza (`date_trunc('month', p_month)`) y deriva
+internamente el rango sobre `expense_date`. Aislamiento por `auth.uid()`
+con RLS como segunda defensa; grants mínimos (solo `authenticated`
+ejecuta). `MetricsRepository` (Flutter) será consumidor futuro; Tarea 4.1
+no implementa UI, modelos Dart de métricas ni repositorio.
+
 ## Comprobantes
 
 Procesamiento efímero.
