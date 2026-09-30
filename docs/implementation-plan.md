@@ -131,9 +131,13 @@
   (RPC `expenses_spending_by_category` / `expenses_top_categories` /
   `expenses_top_merchants`; sin UI ni MetricsRepository Flutter)
 - Tarea 4.3 — Evolución de 6 meses y comparación con período anterior —
-  IN_PROGRESS
+  APPROVED + DEPLOYED DEV
   (RPC `expenses_monthly_trend` / `expenses_monthly_comparison`;
   sin UI ni MetricsRepository Flutter)
+- Tarea 4.4 — Capa Flutter de métricas — IN_PROGRESS
+  (`MetricsRepository` + `SupabaseMetricsStore` consumiendo las seis RPC
+  aprobadas; sin UI ni dashboard)
+- Tarea 4.5 — PENDING
 
 ## Pendientes de decisión
 

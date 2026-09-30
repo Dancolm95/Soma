@@ -155,6 +155,37 @@ cuando `previous > 0`, `NULL` en caso contrario).
 PostgreSQL devuelve datos; Flutter decidirá la presentación
 (formateo, redondeo visual, representación del `NULL`).
 
+### Capa Flutter de métricas (Tarea 4.4)
+
+PostgreSQL sigue siendo la única autoridad de cálculo. Flutter solo
+selecciona un mes, llama las seis RPC aprobadas y mapea la respuesta:
+
+`RPC PostgreSQL → SupabaseMetricsStore → MetricsRepository`
+→ futuro controller/UI.
+
+- `SupabaseMetricsStore` (infrastructure, delgado): ejecuta cada RPC con
+  el único parámetro `{'p_month': 'YYYY-MM-01'}` (mes canonicalizado a
+  día 1, sin `user_id`, sin rangos, sin JWT manual).
+- `MetricsRepository` (application, seis operaciones: `monthlyTotal`,
+  `spendingByCategory`, `topCategories`, `topMerchants`, `monthlyTrend`,
+  `monthlyComparison`): canonicaliza el input, valida/mapa de forma
+  estricta (fail-closed) y traduce errores a `MetricsError`
+  (`invalidResponse`, `unauthorized`, `unexpected`) con mensajes seguros.
+- Dinero: `numeric` exacto → enteros de céntimos (`parseMetricsAmount`,
+  duplicado exacto del patrón de expenses; sin `double` financiero).
+- `percentage_change` no es dinero: `PercentageChange` textual validado y
+  nullable; `NULL` (mes previo en 0) se preserva como ausencia,
+  distinguible de 0. Sin paquete decimal.
+- El repository nunca recalcula (sin sumas, agrupaciones, Top 5,
+  tendencias, `difference` ni porcentajes en Dart), nunca reordena ni
+  normaliza (`Metro` ≠ `metro`), nunca rellena meses y nunca cachea
+  (sin staleness entre usuarios; futuro controller vivirá en
+  `SessionScope`). Validación estricta: total 1 fila, Top ≤ 5, trend
+  exactamente 6 meses consecutivos terminando en el mes pedido,
+  comparison 1 fila con mes previo calendario.
+- Widgets nunca acceden a Supabase; RLS/`auth.uid()` sigue siendo la
+  frontera de autorización, sin autorización client-side.
+
 ## Comprobantes
 
 Procesamiento efímero.
