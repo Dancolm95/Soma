@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:soma_app/application/auth/auth_controller.dart';
 import 'package:soma_app/application/categories/category_repository.dart';
 import 'package:soma_app/application/expenses/expense_repository.dart';
+import 'package:soma_app/application/metrics/metrics_repository.dart';
 import 'package:soma_app/features/auth/auth_screen.dart';
 import 'package:soma_app/features/auth/reset_password_screen.dart';
 import 'package:soma_app/features/auth/session_scope.dart';
@@ -13,11 +14,13 @@ class AuthGate extends StatelessWidget {
     required this.authController,
     required this.expenseRepository,
     required this.categoryRepository,
+    required this.metricsRepository,
   });
 
   final AuthController authController;
   final ExpenseRepository expenseRepository;
   final CategoryRepository categoryRepository;
+  final MetricsRepository metricsRepository;
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +42,7 @@ class AuthGate extends StatelessWidget {
             authController: authController,
             expenseRepository: expenseRepository,
             categoryRepository: categoryRepository,
+            metricsRepository: metricsRepository,
           ),
         };
       },

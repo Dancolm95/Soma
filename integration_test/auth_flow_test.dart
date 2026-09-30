@@ -10,6 +10,8 @@ import 'package:soma_app/infrastructure/categories/supabase_category_repository.
 import 'package:soma_app/infrastructure/categories/supabase_category_store.dart';
 import 'package:soma_app/infrastructure/expenses/supabase_expense_repository.dart';
 import 'package:soma_app/infrastructure/expenses/supabase_expense_store.dart';
+import 'package:soma_app/infrastructure/metrics/supabase_metrics_repository.dart';
+import 'package:soma_app/infrastructure/metrics/supabase_metrics_store.dart';
 import 'package:soma_app/main.dart' as app;
 
 void main() {
@@ -76,6 +78,9 @@ void main() {
         ),
         categoryRepository: SupabaseCategoryRepository(
           SupabaseCategoryStore(client),
+        ),
+        metricsRepository: SupabaseMetricsRepository(
+          SupabaseMetricsStore(client),
         ),
       ),
     );

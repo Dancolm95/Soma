@@ -11,6 +11,7 @@ import 'package:soma_app/application/expenses/expense.dart';
 import 'package:soma_app/application/expenses/expense_repository.dart';
 
 import '../../helpers/fake_auth_service.dart';
+import '../../helpers/fake_metrics_repository.dart';
 
 class GatedExpenseRepository implements ExpenseRepository {
   Future<List<Expense>> Function() onList = () async => const [];
@@ -82,11 +83,13 @@ void main() {
     addTearDown(service.dispose);
     final expenses = GatedExpenseRepository();
     final categories = GatedCategoryRepository();
+    final metrics = GatedMetricsRepository();
     await tester.pumpWidget(
       SomaApp(
         authController: auth,
         expenseRepository: expenses,
         categoryRepository: categories,
+        metricsRepository: metrics,
       ),
     );
 
@@ -141,6 +144,7 @@ void main() {
         authController: auth,
         expenseRepository: expenses,
         categoryRepository: categories,
+        metricsRepository: GatedMetricsRepository(),
       ),
     );
 
@@ -169,6 +173,7 @@ void main() {
         authController: auth,
         expenseRepository: expenses,
         categoryRepository: categories,
+        metricsRepository: GatedMetricsRepository(),
       ),
     );
 

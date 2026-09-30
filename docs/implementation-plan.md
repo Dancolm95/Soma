@@ -134,10 +134,19 @@
   APPROVED + DEPLOYED DEV
   (RPC `expenses_monthly_trend` / `expenses_monthly_comparison`;
   sin UI ni MetricsRepository Flutter)
-- Tarea 4.4 — Capa Flutter de métricas — IN_PROGRESS
+- Tarea 4.4 — Capa Flutter de métricas — APPROVED WITH OBSERVATIONS
   (`MetricsRepository` + `SupabaseMetricsStore` consumiendo las seis RPC
   aprobadas; sin UI ni dashboard)
-- Tarea 4.5 — PENDING
+- Tarea 4.5 — Dashboard de métricas e integración de presentación —
+  IN_PROGRESS
+  (`MetricsController` + dashboard `Resumen` sobre `MetricsRepository`;
+  sin cálculos nuevos en Flutter, sin dependencias nuevas)
+
+## Observación registrada (Tarea 4.4, pendiente de tarea explícita)
+
+- `parseExpenseAmount('')` devuelve `0` en lugar de fallar cerrado.
+  NO corregido en Tarea 4.5 por alcance (la tarea lo prohíbe
+  explícitamente). Su corrección queda para una tarea explícita posterior.
 
 ## Pendientes de decisión
 

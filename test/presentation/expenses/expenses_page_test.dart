@@ -7,7 +7,10 @@ import 'package:soma_app/presentation/expenses/expenses_controller.dart';
 import 'package:soma_app/presentation/expenses/expenses_page.dart';
 
 import '../../helpers/fake_auth_service.dart';
+import '../../helpers/fake_metrics_repository.dart';
 import '../../helpers/fake_repositories.dart';
+
+import 'package:soma_app/presentation/metrics/metrics_controller.dart';
 
 Future<void> pumpExpenses(
   WidgetTester tester, {
@@ -18,15 +21,18 @@ Future<void> pumpExpenses(
   final auth = AuthController(authService);
   final expenses = ExpensesController(expenseRepo);
   final categories = CategoriesController(categoryRepo);
+  final metrics = MetricsController(FakeMetricsRepository());
   addTearDown(auth.dispose);
   addTearDown(authService.dispose);
   addTearDown(expenses.dispose);
   addTearDown(categories.dispose);
+  addTearDown(metrics.dispose);
   await tester.pumpWidget(
     MaterialApp(
       home: ExpensesPage(
         expensesController: expenses,
         categoriesController: categories,
+        metricsController: metrics,
         authController: auth,
       ),
     ),

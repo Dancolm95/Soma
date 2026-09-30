@@ -161,7 +161,7 @@ PostgreSQL sigue siendo la única autoridad de cálculo. Flutter solo
 selecciona un mes, llama las seis RPC aprobadas y mapea la respuesta:
 
 `RPC PostgreSQL → SupabaseMetricsStore → MetricsRepository`
-→ futuro controller/UI.
+→ `MetricsController`/UI (Tarea 4.5).
 
 - `SupabaseMetricsStore` (infrastructure, delgado): ejecuta cada RPC con
   el único parámetro `{'p_month': 'YYYY-MM-01'}` (mes canonicalizado a
@@ -179,12 +179,35 @@ selecciona un mes, llama las seis RPC aprobadas y mapea la respuesta:
 - El repository nunca recalcula (sin sumas, agrupaciones, Top 5,
   tendencias, `difference` ni porcentajes en Dart), nunca reordena ni
   normaliza (`Metro` ≠ `metro`), nunca rellena meses y nunca cachea
-  (sin staleness entre usuarios; futuro controller vivirá en
+  (sin staleness entre usuarios; el controller vive en
   `SessionScope`). Validación estricta: total 1 fila, Top ≤ 5, trend
   exactamente 6 meses consecutivos terminando en el mes pedido,
   comparison 1 fila con mes previo calendario.
 - Widgets nunca acceden a Supabase; RLS/`auth.uid()` sigue siendo la
   frontera de autorización, sin autorización client-side.
+
+### Dashboard de métricas (Tarea 4.5)
+
+Presentación funcional mínima sobre `MetricsRepository`, sin cálculos
+financieros nuevos en Flutter (sin sumas, reagrupaciones, Top 5,
+tendencias, diferencias ni porcentajes en Dart; sin `double`
+financiero; `formatPen` entero ya existente para presentar).
+
+`SessionScope → MetricsController → MetricsRepository`:
+el controller (`ChangeNotifier`, mismo patrón que
+`ExpensesController`) vive dentro de `SessionScope` y muere con la
+sesión (logout/cambio de `auth.users.id` destruye métricas cargadas;
+la navegación autenticada usa un `Navigator` anidado del scope para
+que ninguna ruta empujada sobreviva a la sesión).
+
+Estrategia de snapshot con generación interna (`request-id`): la carga
+es una unidad de presentación — `loading` → las seis operaciones
+completan para el mismo mes canonicalizado → se publica un snapshot
+completo; si alguna falla, se publica error seguro sin mezcla
+nueva/vieja. Respuestas de generaciones antiguas se descartan para que
+una selección nueva nunca sea sobrescrita por una tardía. Mes inicial:
+mes calendario actual local canonicalizado a día 1; navegación
+anterior/siguiente con futuro bloqueado.
 
 ## Comprobantes
 

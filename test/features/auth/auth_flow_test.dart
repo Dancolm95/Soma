@@ -5,6 +5,7 @@ import 'package:soma_app/application/auth/auth_controller.dart';
 import 'package:soma_app/application/auth/auth_service.dart';
 
 import '../../helpers/fake_auth_service.dart';
+import '../../helpers/fake_metrics_repository.dart';
 import '../../helpers/fake_repositories.dart';
 
 void main() {
@@ -20,6 +21,7 @@ void main() {
         authController: controller,
         expenseRepository: FakeExpenseRepository(),
         categoryRepository: FakeCategoryRepository(),
+        metricsRepository: FakeMetricsRepository(),
       ),
     );
     return controller;
@@ -187,6 +189,7 @@ void main() {
             authController: controller,
             expenseRepository: FakeExpenseRepository(),
             categoryRepository: FakeCategoryRepository(),
+            metricsRepository: FakeMetricsRepository(),
           ),
         );
 
@@ -229,6 +232,7 @@ void main() {
           authController: controller,
           expenseRepository: FakeExpenseRepository(),
           categoryRepository: FakeCategoryRepository(),
+          metricsRepository: FakeMetricsRepository(),
         ),
       );
 
