@@ -19,9 +19,9 @@ archivos relevantes según la tarea:
 - `docs/implementation-plan.md`
 - `docs/adr/*.md`
 
-## Rol y autoridad de OpenCode
+## Rol y autoridad del agente de implementación
 
-OpenCode IMPLEMENTA, PRUEBA y REPORTA EVIDENCIA.
+El agente de implementación IMPLEMENTA, PRUEBA y REPORTA EVIDENCIA.
 
 No posee autoridad arquitectónica.
 
@@ -62,7 +62,7 @@ Si la documentación y la tarea parecen contradecirse: DETENERSE Y ESCALAR.
 
 Soma MVP is PEN-only.
 
-OpenCode MUST STOP and escalate before:
+El agente de implementación MUST STOP and escalate before:
 
 - introducing another persisted currency;
 - implementing currency conversion;

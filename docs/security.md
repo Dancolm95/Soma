@@ -11,7 +11,7 @@
 - nunca confiar en `user_id` enviado por Flutter;
 - claves Gemini solo backend;
 - backups automáticos antes de producción;
-- OpenCode no puede desactivar/cambiar controles de seguridad unilateralmente.
+- El agente de implementación no puede desactivar/cambiar controles de seguridad unilateralmente.
 
 ## IMPORTANTES
 
