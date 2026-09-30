@@ -141,6 +141,20 @@ JOIN), `expenses_top_categories` (reutiliza la agrupación anterior +
 nombre/`merchant ASC`, `id` como último criterio). Sin vistas,
 materialized views, caché ni normalización de merchants en Fase 4.
 
+### Evolución y comparación (Tarea 4.3)
+
+Dos RPC bajo el mismo patrón (`SECURITY INVOKER`, mes como entrada,
+`expense_date`, `numeric` exacto):
+`expenses_monthly_trend` (serie fija de 6 meses calendario `M-5..M` en
+orden `period_start ASC`; los meses sin gastos aparecen con `0`, nunca
+`NULL`, para que Flutter dibuje una serie continua) y
+`expenses_monthly_comparison` (mes seleccionado vs mes calendario
+inmediatamente anterior; `difference = current - previous`;
+`percentage_change = ((current - previous) / previous) * 100` solo
+cuando `previous > 0`, `NULL` en caso contrario).
+PostgreSQL devuelve datos; Flutter decidirá la presentación
+(formateo, redondeo visual, representación del `NULL`).
+
 ## Comprobantes
 
 Procesamiento efímero.
