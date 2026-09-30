@@ -68,6 +68,28 @@ void main() {
     expect(find.text('S/ 1234.56'), findsOneWidget);
   });
 
+  testWidgets('month change does not display the previous month total', (
+    tester,
+  ) async {
+    final repo = FakeMetricsRepository(month: DateTime(2026, 9, 1));
+    final controller = readyController(repository: repo);
+    await controller.load();
+    await pumpMetrics(tester, controller);
+    expect(find.text('S/ 1234.56'), findsOneWidget);
+
+    final gate = Completer<MonthlyTotal>();
+    repo.totalHandler = (_) => gate.future;
+    await tester.tap(find.byTooltip('Mes anterior'));
+    await tester.pump();
+    expect(find.text('Agosto 2026'), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.text('S/ 1234.56'), findsNothing);
+
+    gate.complete(testTotal(month: DateTime(2026, 8, 1)));
+    await tester.pumpAndSettle();
+    expect(find.text('S/ 1234.56'), findsOneWidget);
+  });
+
   testWidgets('renders total in PEN without currency selector', (tester) async {
     final controller = readyController();
     await settleLoad(tester, controller.load());
@@ -76,6 +98,27 @@ void main() {
 
     expect(find.text('S/ 1234.56'), findsOneWidget);
     expect(find.textContaining('USD'), findsNothing);
+  });
+
+  testWidgets('refresh action reloads all six metrics', (tester) async {
+    final repo = FakeMetricsRepository(month: DateTime(2026, 9, 1));
+    final controller = readyController(repository: repo);
+    await controller.load();
+    await pumpMetrics(tester, controller);
+
+    await tester.tap(find.byTooltip('Actualizar resumen'));
+    await tester.pumpAndSettle();
+
+    for (final calls in [
+      repo.totalCalls,
+      repo.breakdownCalls,
+      repo.topCategoriesCalls,
+      repo.topMerchantsCalls,
+      repo.trendCalls,
+      repo.comparisonCalls,
+    ]) {
+      expect(calls.length, 2);
+    }
   });
 
   testWidgets('positive comparison shows increase and percentage', (

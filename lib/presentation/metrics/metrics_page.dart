@@ -52,7 +52,16 @@ class _MetricsPageState extends State<MetricsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Resumen')),
+      appBar: AppBar(
+        title: const Text('Resumen'),
+        actions: [
+          IconButton(
+            tooltip: 'Actualizar resumen',
+            icon: const Icon(Icons.refresh),
+            onPressed: widget.controller.refresh,
+          ),
+        ],
+      ),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 800),

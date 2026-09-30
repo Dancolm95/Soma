@@ -197,6 +197,30 @@ void main() {
     expect(controller.errorMessage, isNull);
   });
 
+  test(
+    'month change hides the old snapshot until all six results arrive',
+    () async {
+      final repo = FakeMetricsRepository(month: DateTime(2026, 9, 1));
+      final gate = Completer<List<CategorySpending>>();
+      final controller = buildController(repository: repo);
+      await controller.load();
+      expect(controller.snapshot?.month, DateTime(2026, 9, 1));
+
+      repo.breakdownHandler = (_) => gate.future;
+      final nextLoad = controller.selectMonth(DateTime(2026, 8, 15));
+      expect(controller.selectedMonth, DateTime(2026, 8, 1));
+      expect(controller.loading, isTrue);
+      expect(controller.snapshot, isNull);
+      await Future<void>.delayed(Duration.zero);
+      expect(controller.snapshot, isNull);
+
+      gate.complete(repo.breakdown);
+      await nextLoad;
+      expect(controller.snapshot?.month, DateTime(2026, 8, 1));
+      expect(controller.loading, isFalse);
+    },
+  );
+
   test('null percentage is preserved as absence', () async {
     final repo = FakeMetricsRepository(
       month: DateTime(2026, 9, 1),

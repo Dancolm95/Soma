@@ -38,7 +38,9 @@
 - Fase 4 — IN_PROGRESS
 - Tarea 4.1 — Contratos SQL y resumen mensual — APPROVED + DEPLOYED DEV
 - Tarea 4.2 — Distribución por categorías y Top 5 — APPROVED + DEPLOYED DEV
-- Tarea 4.3 — IN_PROGRESS
+- Tarea 4.3 — APPROVED + DEPLOYED DEV
+- Tarea 4.4 — APPROVED WITH OBSERVATIONS
+- Tarea 4.5 — IN_PROGRESS
 
 ## Identificador Android
 

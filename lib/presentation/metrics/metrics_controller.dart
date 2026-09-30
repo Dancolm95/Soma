@@ -51,6 +51,7 @@ class MetricsController extends ChangeNotifier {
     final request = ++_requestId;
     final month = selectedMonth;
     loading = true;
+    snapshot = null;
     errorMessage = null;
     notifyListeners();
     try {
