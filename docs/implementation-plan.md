@@ -35,12 +35,12 @@
 - Tarea 3.5 — APPROVED WITH OBSERVATIONS
 - Tarea 3.6 — APPROVED
 - Tarea 3.7 — APPROVED WITH OBSERVATIONS
-- Fase 4 — IN_PROGRESS
+- Fase 4 — COMPLETED
 - Tarea 4.1 — Contratos SQL y resumen mensual — APPROVED + DEPLOYED DEV
 - Tarea 4.2 — Distribución por categorías y Top 5 — APPROVED + DEPLOYED DEV
 - Tarea 4.3 — APPROVED + DEPLOYED DEV
 - Tarea 4.4 — APPROVED WITH OBSERVATIONS
-- Tarea 4.5 — IN_PROGRESS
+- Tarea 4.5 — APPROVED WITH OBSERVATIONS
 
 ## Identificador Android
 
@@ -140,15 +140,18 @@
   (`MetricsRepository` + `SupabaseMetricsStore` consumiendo las seis RPC
   aprobadas; sin UI ni dashboard)
 - Tarea 4.5 — Dashboard de métricas e integración de presentación —
-  IN_PROGRESS
+  APPROVED WITH OBSERVATIONS
   (`MetricsController` + dashboard `Resumen` sobre `MetricsRepository`;
   sin cálculos nuevos en Flutter, sin dependencias nuevas)
 
-## Observación registrada (Tarea 4.4, pendiente de tarea explícita)
+## Observaciones abiertas no bloqueantes (Fase 4)
 
-- `parseExpenseAmount('')` devuelve `0` en lugar de fallar cerrado.
+- Tarea 4.4 — MEJORA: `parseExpenseAmount('')` devuelve `0` en lugar de fallar cerrado.
   NO corregido en Tarea 4.5 por alcance (la tarea lo prohíbe
   explícitamente). Su corrección queda para una tarea explícita posterior.
+- Tarea 4.5 — MEJORA operativa: el smoke del dashboard pasó en modo headless
+  con aplicación, `MetricsController`, repositorio y Supabase local reales.
+  Falta ejecutarlo de forma nativa en Android/Web por limitaciones del entorno.
 
 ## Pendientes de decisión
 
