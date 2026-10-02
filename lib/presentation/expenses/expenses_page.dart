@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 
 import 'package:soma_app/application/auth/auth_controller.dart';
 import 'package:soma_app/presentation/categories/categories_controller.dart';
-import 'package:soma_app/presentation/categories/categories_page.dart';
 import 'package:soma_app/presentation/expenses/amount_input.dart';
 import 'package:soma_app/presentation/expenses/expense_form_page.dart';
 import 'package:soma_app/presentation/expenses/expenses_controller.dart';
 import 'package:soma_app/presentation/metrics/metrics_controller.dart';
-import 'package:soma_app/presentation/metrics/metrics_page.dart';
 
 class ExpensesPage extends StatefulWidget {
   const ExpensesPage({
@@ -109,45 +107,10 @@ class _ExpensesPageState extends State<ExpensesPage> {
         .showSnackBar(SnackBar(content: Text(message)));
   }
 
-  void _openCategories() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => CategoriesPage(controller: widget.categoriesController),
-      ),
-    );
-  }
-
-  void _openMetrics() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => MetricsPage(controller: widget.metricsController),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Gastos'),
-        actions: [
-          IconButton(
-            tooltip: 'Resumen',
-            icon: const Icon(Icons.bar_chart_outlined),
-            onPressed: _openMetrics,
-          ),
-          IconButton(
-            tooltip: 'Categorías',
-            icon: const Icon(Icons.category_outlined),
-            onPressed: _openCategories,
-          ),
-          IconButton(
-            tooltip: 'Cerrar sesión',
-            icon: const Icon(Icons.logout),
-            onPressed: () => widget.authController.signOut(),
-          ),
-        ],
-      ),
+      appBar: AppBar(title: const Text('Gastos')),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 640),

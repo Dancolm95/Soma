@@ -6,7 +6,7 @@ import 'package:soma_app/application/expenses/expense_repository.dart';
 import 'package:soma_app/application/metrics/metrics_repository.dart';
 import 'package:soma_app/presentation/categories/categories_controller.dart';
 import 'package:soma_app/presentation/expenses/expenses_controller.dart';
-import 'package:soma_app/presentation/expenses/expenses_page.dart';
+import 'package:soma_app/presentation/home/home_shell.dart';
 import 'package:soma_app/presentation/metrics/metrics_controller.dart';
 
 /// Session-scoped composition root for the authenticated area.
@@ -66,7 +66,7 @@ class _SessionScopeState extends State<SessionScope> {
   Widget build(BuildContext context) {
     return Navigator(
       onGenerateRoute: (_) => MaterialPageRoute(
-        builder: (_) => ExpensesPage(
+        builder: (_) => HomeShell(
           expensesController: _expensesController,
           categoriesController: _categoriesController,
           metricsController: _metricsController,

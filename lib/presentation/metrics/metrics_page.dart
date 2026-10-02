@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:soma_app/application/metrics/metrics.dart';
 import 'package:soma_app/presentation/expenses/amount_input.dart';
 import 'package:soma_app/presentation/metrics/metrics_controller.dart';
+import 'package:soma_app/presentation/theme/category_colors.dart';
 
 const _spanishMonths = [
   'Enero',
@@ -186,23 +187,32 @@ class _TotalCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Total del mes',
-              style: Theme.of(context).textTheme.titleMedium,
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: scheme.primary,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Total del mes',
+            style: Theme.of(context).textTheme.bodyMedium
+                ?.copyWith(color: scheme.onPrimary.withValues(alpha: 0.85)),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            formatPen(snapshot.total.totalMinor),
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              color: scheme.onPrimary,
+              fontWeight: FontWeight.bold,
+              fontFeatures: const [FontFeature.tabularFigures()],
             ),
-            const SizedBox(height: 8),
-            Text(
-              formatPen(snapshot.total.totalMinor),
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -227,6 +237,12 @@ class _ComparisonCard extends StatelessWidget {
         : difference < 0
         ? Icons.trending_down
         : Icons.trending_flat;
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    final deltaColor = difference > 0
+        ? (dark ? const Color(0xFFE5B94E) : const Color(0xFF7A4A00))
+        : difference < 0
+        ? (dark ? const Color(0xFF5FCE9F) : const Color(0xFF0E7F56))
+        : Theme.of(context).colorScheme.onSurfaceVariant;
     final percentage = comparison.percentageChange;
     return Card(
       child: Padding(
@@ -240,18 +256,30 @@ class _ComparisonCard extends StatelessWidget {
             const SizedBox(height: 4),
             Row(
               children: [
-                Icon(icon, semanticLabel: direction),
+                Icon(icon, semanticLabel: direction, color: deltaColor),
                 const SizedBox(width: 8),
-                Expanded(child: Text(direction)),
+                Expanded(
+                  child: Text(direction, style: TextStyle(color: deltaColor)),
+                ),
               ],
             ),
             const SizedBox(height: 4),
-            Text(formatPen(difference)),
+            Text(
+              formatPen(difference),
+              style: const TextStyle(
+                fontFeatures: [FontFeature.tabularFigures()],
+              ),
+            ),
             const SizedBox(height: 4),
             if (percentage == null)
               const Text('Sin base de comparación')
             else
-              Text('${percentage.value}%'),
+              Text(
+                '${percentage.value}%',
+                style: const TextStyle(
+                  fontFeatures: [FontFeature.tabularFigures()],
+                ),
+              ),
           ],
         ),
       ),
@@ -336,6 +364,7 @@ class _BreakdownCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final breakdown = snapshot.breakdown;
+    final monthTotal = snapshot.total.totalMinor;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -351,10 +380,11 @@ class _BreakdownCard extends StatelessWidget {
               const Text('Sin gastos en este mes.')
             else
               for (final row in breakdown)
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(row.categoryName),
-                  trailing: Text(formatPen(row.totalMinor)),
+                _ColoredRow(
+                  seed: row.categoryId,
+                  label: row.categoryName,
+                  amountMinor: row.totalMinor,
+                  fraction: monthTotal > 0 ? row.totalMinor / monthTotal : null,
                 ),
           ],
         ),
@@ -370,6 +400,7 @@ class _TopCategoriesCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final monthTotal = snapshot.total.totalMinor;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -385,10 +416,11 @@ class _TopCategoriesCard extends StatelessWidget {
               const Text('Sin gastos en este mes.')
             else
               for (final row in snapshot.topCategories)
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(row.categoryName),
-                  trailing: Text(formatPen(row.totalMinor)),
+                _ColoredRow(
+                  seed: row.categoryId,
+                  label: row.categoryName,
+                  amountMinor: row.totalMinor,
+                  fraction: monthTotal > 0 ? row.totalMinor / monthTotal : null,
                 ),
           ],
         ),
@@ -419,13 +451,82 @@ class _TopMerchantsCard extends StatelessWidget {
               const Text('Sin gastos en este mes.')
             else
               for (final row in snapshot.topMerchants)
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(row.merchant),
-                  trailing: Text(formatPen(row.totalMinor)),
+                _ColoredRow(
+                  seed: row.merchant,
+                  label: row.merchant,
+                  amountMinor: row.totalMinor,
                 ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _ColoredRow extends StatelessWidget {
+  const _ColoredRow({
+    required this.seed,
+    required this.label,
+    required this.amountMinor,
+    this.fraction,
+  });
+
+  final String seed;
+  final String label;
+  final int amountMinor;
+  final double? fraction;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = SomaCategoryColors.of(context, seed);
+    final initial = label.isEmpty ? '?' : label[0].toUpperCase();
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 18,
+                backgroundColor: colors.background,
+                foregroundColor: colors.foreground,
+                child: Text(
+                  initial,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                formatPen(amountMinor),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontFeatures: [FontFeature.tabularFigures()],
+                ),
+              ),
+            ],
+          ),
+          if (fraction != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 6, left: 48),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(3),
+                child: LinearProgressIndicator(
+                  value: fraction!.clamp(0.0, 1.0),
+                  minHeight: 6,
+                  backgroundColor: colors.background,
+                  valueColor: AlwaysStoppedAnimation<Color>(colors.foreground),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
