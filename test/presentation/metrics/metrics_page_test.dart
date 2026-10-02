@@ -7,7 +7,7 @@ import 'package:soma_app/application/metrics/metrics.dart';
 import 'package:soma_app/application/metrics/metrics_repository.dart';
 import 'package:soma_app/presentation/categories/categories_controller.dart';
 import 'package:soma_app/presentation/expenses/expenses_controller.dart';
-import 'package:soma_app/presentation/home/home_shell.dart';
+import 'package:soma_app/presentation/expenses/expenses_page.dart';
 import 'package:soma_app/presentation/metrics/metrics_controller.dart';
 import 'package:soma_app/presentation/metrics/metrics_page.dart';
 
@@ -312,54 +312,50 @@ void main() {
     expect(find.text('Septiembre 2026'), findsOneWidget);
   });
 
-  testWidgets('shell navigates to Resumen; Más keeps categories and logout', (
-    tester,
-  ) async {
-    final authService = FakeAuthService();
-    final auth = AuthController(authService);
-    final expenses = ExpensesController(FakeExpenseRepository());
-    final categories = CategoriesController(
-      FakeCategoryRepository()..categories = testCategories(),
-    );
-    final metrics = MetricsController(
-      FakeMetricsRepository(month: DateTime(2026, 9, 1)),
-      initialMonth: DateTime(2026, 9, 15),
-      currentMonth: DateTime(2026, 9, 30),
-    );
-    addTearDown(auth.dispose);
-    addTearDown(authService.dispose);
-    addTearDown(expenses.dispose);
-    addTearDown(categories.dispose);
-    addTearDown(metrics.dispose);
+  testWidgets(
+    'Gastos navigates to Resumen; Categorías and logout stay accessible',
+    (tester) async {
+      final authService = FakeAuthService();
+      final auth = AuthController(authService);
+      final expenses = ExpensesController(FakeExpenseRepository());
+      final categories = CategoriesController(
+        FakeCategoryRepository()..categories = testCategories(),
+      );
+      final metrics = MetricsController(
+        FakeMetricsRepository(month: DateTime(2026, 9, 1)),
+        initialMonth: DateTime(2026, 9, 15),
+        currentMonth: DateTime(2026, 9, 30),
+      );
+      addTearDown(auth.dispose);
+      addTearDown(authService.dispose);
+      addTearDown(expenses.dispose);
+      addTearDown(categories.dispose);
+      addTearDown(metrics.dispose);
 
-    await tester.pumpWidget(
-      MaterialApp(
-        home: HomeShell(
-          expensesController: expenses,
-          categoriesController: categories,
-          metricsController: metrics,
-          authController: auth,
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ExpensesPage(
+            expensesController: expenses,
+            categoriesController: categories,
+            metricsController: metrics,
+            authController: auth,
+          ),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
+      );
+      await tester.pumpAndSettle();
 
-    expect(find.text('Gastos'), findsOneWidget);
-    expect(find.text('Agregar'), findsOneWidget);
-    expect(find.text('Resumen'), findsOneWidget);
-    expect(find.text('Más'), findsOneWidget);
+      expect(find.byTooltip('Resumen'), findsOneWidget);
+      expect(find.byTooltip('Categorías'), findsOneWidget);
+      expect(find.byTooltip('Cerrar sesión'), findsOneWidget);
 
-    await tester.tap(find.text('Resumen'));
-    await tester.pumpAndSettle();
-    expect(find.text('Total del mes'), findsOneWidget);
+      await tester.tap(find.byTooltip('Resumen'));
+      await tester.pumpAndSettle();
+      expect(find.text('Resumen'), findsWidgets);
+      expect(find.text('Total del mes'), findsOneWidget);
 
-    await tester.pageBack();
-    await tester.pumpAndSettle();
-    expect(find.text('Gastos'), findsOneWidget);
-
-    await tester.tap(find.text('Más'));
-    await tester.pumpAndSettle();
-    expect(find.text('Categorías'), findsOneWidget);
-    expect(find.text('Cerrar sesión'), findsOneWidget);
-  });
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+      expect(find.text('Gastos'), findsOneWidget);
+    },
+  );
 }

@@ -83,9 +83,7 @@ void main() {
 
       expect(find.text('Gastos'), findsOneWidget);
 
-      await tester.tap(find.text('Más'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Cerrar sesión'));
+      await tester.tap(find.byTooltip('Cerrar sesión'));
       await tester.pumpAndSettle();
 
       expect(service.signOutCalled, isTrue);

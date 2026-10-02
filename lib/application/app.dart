@@ -5,7 +5,6 @@ import 'package:soma_app/application/categories/category_repository.dart';
 import 'package:soma_app/application/expenses/expense_repository.dart';
 import 'package:soma_app/application/metrics/metrics_repository.dart';
 import 'package:soma_app/features/auth/auth_gate.dart';
-import 'package:soma_app/presentation/theme/soma_theme.dart';
 
 class SomaApp extends StatelessWidget {
   const SomaApp({
@@ -25,8 +24,7 @@ class SomaApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Soma',
-      theme: SomaTheme.light(),
-      darkTheme: SomaTheme.dark(),
+      theme: ThemeData(useMaterial3: true),
       home: AuthGate(
         authController: authController,
         expenseRepository: expenseRepository,
