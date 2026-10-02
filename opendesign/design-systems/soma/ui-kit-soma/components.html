@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es" data-direction="b" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Soma · Componentes</title>
+  <link rel="stylesheet" href="../tokens/colors_and_type.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="1" />
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    body { margin: 0; background: var(--surface-page); color: var(--fg-1); font: var(--body); }
+    .bar { position: sticky; top: 0; z-index: 10; display: flex; flex-wrap: wrap; gap: var(--sp-2); align-items: center; padding: var(--sp-3) var(--sp-4); background: var(--surface-primary); border-bottom: 1px solid var(--border-subtle); }
+    .bar strong { font: var(--body-strong); margin-right: var(--sp-2); }
+    .seg { display: flex; border: 1px solid var(--border-strong); border-radius: var(--radius-xl); overflow: hidden; }
+    .seg button { font: var(--small); padding: 8px 16px; border: 0; background: transparent; color: var(--fg-2); cursor: pointer; min-height: 44px; }
+    .seg button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); font-weight: 600; }
+    main { max-width: 960px; margin: 0 auto; padding: var(--sp-8) var(--sp-4) var(--sp-12); display: grid; gap: var(--sp-8); }
+    h1 { font: var(--h1); margin: 0; }
+    h2 { font: var(--h2); margin: 0; }
+    p.lead { color: var(--fg-2); margin: 0; max-width: 62ch; }
+    section { display: grid; gap: var(--sp-4); }
+    .card { background: var(--surface-primary); border: 1px solid var(--border-subtle); border-radius: var(--radius-l); padding: var(--sp-6); box-shadow: var(--shadow-1); display: grid; gap: var(--sp-4); }
+    .row { display: flex; gap: var(--sp-3); flex-wrap: wrap; align-items: center; }
+    .btn { font: 600 14px/1.4 var(--font); padding: 10px 24px; border-radius: var(--radius-xl); border: 1px solid transparent; cursor: pointer; min-height: 44px; transition: filter var(--dur-fast) var(--ease); }
+    .btn:hover { filter: brightness(0.94); }
+    .btn:active { filter: brightness(0.88); }
+    .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .btn-filled { background: var(--accent); color: var(--on-accent); }
+    .btn-text { background: transparent; color: var(--accent); }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn[disabled] { opacity: 0.38; cursor: not-allowed; }
+    .field { display: grid; gap: var(--sp-1); }
+    .field > span { font: var(--caption); color: var(--fg-2); }
+    .field .box { display: flex; align-items: center; gap: var(--sp-2); background: var(--surface-sunken); border: 1px solid var(--border-subtle); border-radius: var(--radius-s); padding: 12px var(--sp-4); }
+    .field .box:focus-within { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 1px; }
+    .field input { font: var(--body); background: transparent; border: 0; outline: 0; width: 100%; color: var(--fg-1); }
+    .field .amount { font: var(--amount); font-variant-numeric: tabular-nums; }
+    .field .prefix { font: var(--body-strong); color: var(--fg-3); }
+    .field .err { font: var(--small); color: var(--danger); }
+    .field.invalid .box { border-color: var(--danger); }
+    .chip { font: var(--small); padding: 8px 16px; border-radius: var(--radius-xl); border: 1px solid var(--border-strong); background: transparent; color: var(--fg-2); cursor: pointer; min-height: 44px; }
+    .chip[aria-pressed="true"] { background: var(--accent-soft); border-color: transparent; color: var(--accent-ink); font-weight: 600; }
+    .expense { display: flex; gap: var(--sp-3); align-items: center; background: var(--surface-primary); border: 1px solid var(--border-subtle); border-radius: var(--radius-m); padding: var(--sp-3) var(--sp-4); box-shadow: var(--shadow-1); }
+    .avatar { width: 40px; height: 40px; border-radius: var(--radius-s); background: var(--accent-soft); color: var(--accent-ink); display: grid; place-items: center; font: var(--body-strong); }
+    .expense .meta { flex: 1; display: grid; }
+    .expense .meta b { font: var(--body-strong); }
+    .expense .meta span { font: var(--small); color: var(--fg-3); }
+    .expense .m { font: var(--body-strong); font-variant-numeric: tabular-nums; }
+    .ai { background: var(--accent-soft); border-radius: var(--radius-m); padding: var(--sp-4); display: grid; gap: var(--sp-2); }
+    .ai p { margin: 0; font: var(--small); color: var(--accent-ink); }
+    .ai .warnline { font: var(--caption); color: var(--accent-ink); opacity: 0.8; }
+    .dialog { max-width: 420px; background: var(--surface-primary); border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); padding: var(--sp-6); box-shadow: var(--shadow-3); display: grid; gap: var(--sp-3); }
+    .dialog h3 { font: var(--h3); margin: 0; }
+    .dialog p { font: var(--body); color: var(--fg-2); margin: 0; }
+    .snack { background: var(--fg-1); color: var(--bg-1); font: var(--small); padding: var(--sp-3) var(--sp-4); border-radius: var(--radius-s); max-width: 420px; box-shadow: var(--shadow-2); }
+    .nav { display: flex; border-top: 1px solid var(--border-subtle); background: var(--surface-primary); max-width: 420px; }
+    .nav a { flex: 1; text-align: center; font: var(--caption); color: var(--fg-3); text-decoration: none; padding: var(--sp-2) 0 var(--sp-3); }
+    .nav a[aria-current="page"] { color: var(--accent); font-weight: 700; }
+    .nav a span { display: block; font-size: 22px; line-height: 1.2; }
+  </style>
+</head>
+<body>
+  <div class="bar">
+    <strong>Soma · Componentes</strong>
+    <div class="seg" role="group" aria-label="Dirección">
+      <button type="button" data-dir="a" aria-pressed="false">A · Sereno</button>
+      <button type="button" data-dir="b" aria-pressed="true">B · Ágil</button>
+      <button type="button" data-dir="c" aria-pressed="false">C · Cercano</button>
+    </div>
+    <div class="seg" role="group" aria-label="Tema">
+      <button type="button" data-theme-btn="light" aria-pressed="true">Claro</button>
+      <button type="button" data-theme-btn="dark" aria-pressed="false">Oscuro</button>
+    </div>
+  </div>
+  <main>
+    <section>
+      <h1>Componentes M3, con acento Soma</h1>
+      <p class="lead">Recreaciones de lo que ya existe en el código: FilledButton, TextButton, diálogo de eliminar, SnackBar, campos de monto. Foco visible siempre; error nunca solo con color.</p>
+    </section>
+    <section>
+      <h2>Botones</h2>
+      <div class="card">
+        <div class="row">
+          <button class="btn btn-filled" type="button">Guardar gasto</button>
+          <button class="btn btn-text" type="button">Cancelar</button>
+          <button class="btn btn-danger" type="button">Eliminar</button>
+          <button class="btn btn-filled" type="button" disabled="disabled">Guardando…</button>
+        </div>
+      </div>
+    </section>
+    <section>
+      <h2>Campos · prefijo S/ fijo (PEN-only)</h2>
+      <div class="card">
+        <label class="field">
+          <span>Monto</span>
+          <span class="box"><span class="prefix">S/</span><input class="amount" value="48,90" inputmode="decimal" aria-label="Monto en soles" /></span>
+        </label>
+        <label class="field invalid">
+          <span>Monto</span>
+          <span class="box"><span class="prefix">S/</span><input class="amount" value="abc" inputmode="decimal" aria-label="Monto en soles" aria-invalid="true" /></span>
+          <span class="err">Ingresa un importe válido.</span>
+        </label>
+        <label class="field">
+          <span>Comercio / concepto</span>
+          <span class="box"><input value="Plaza Vea" aria-label="Comercio o concepto" /></span>
+        </label>
+      </div>
+    </section>
+    <section>
+      <h2>Chips de categoría</h2>
+      <div class="card"><div class="row" role="group" aria-label="Categorías">
+        <button class="chip" type="button" aria-pressed="true">Comida</button>
+        <button class="chip" type="button" aria-pressed="false">Transporte</button>
+        <button class="chip" type="button" aria-pressed="false">Servicios</button>
+        <button class="chip" type="button" aria-pressed="false">Salud</button>
+      </div></div>
+    </section>
+    <section>
+      <h2>Ítem de gasto</h2>
+      <div class="card">
+        <div class="expense"><span class="avatar">P</span><span class="meta"><b>Plaza Vea</b><span>Comida · 12 oct 2026</span></span><span class="m">S/ 48,90</span></div>
+        <div class="expense"><span class="avatar">M</span><span class="meta"><b>Metropolitano</b><span>Transporte · 11 oct 2026</span></span><span class="m">S/ 3,20</span></div>
+      </div>
+    </section>
+    <section>
+      <h2>Aviso de preview IA</h2>
+      <div class="card">
+        <div class="ai">
+          <p><strong>Revisa los datos extraídos.</strong> Detectamos USD 12,40 en el comprobante (informativo, sin conversión). El importe a guardar es en PEN.</p>
+          <p class="warnline">La IA puede equivocarse. Nada se guarda sin tu confirmación.</p>
+        </div>
+      </div>
+    </section>
+    <section>
+      <h2>Diálogo de eliminar (del código actual)</h2>
+      <div class="card">
+        <div class="dialog" role="alertdialog" aria-labelledby="del-t" aria-describedby="del-d">
+          <h3 id="del-t">¿Eliminar este gasto?</h3>
+          <p id="del-d">Se eliminará el registro de “Plaza Vea”. Esta acción no se puede deshacer.</p>
+          <div class="row" style="justify-content: flex-end;"><button class="btn btn-text" type="button">Cancelar</button><button class="btn btn-danger" type="button">Eliminar</button></div>
+        </div>
+      </div>
+    </section>
+    <section>
+      <h2>SnackBar + navegación</h2>
+      <div class="card">
+        <div class="snack" role="status">Gasto guardado.</div>
+        <nav class="nav" aria-label="Principal">
+          <a href="#" aria-current="page"><span>○</span>Gastos</a>
+          <a href="#"><span>○</span>Resumen</a>
+          <a href="#"><span>○</span>Categorías</a>
+        </nav>
+      </div>
+    </section>
+  </main>
+  <script>
+    var root = document.documentElement;
+    document.querySelectorAll("[data-dir]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        root.setAttribute("data-direction", b.getAttribute("data-dir"));
+        document.querySelectorAll("[data-dir]").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      });
+    });
+    document.querySelectorAll("[data-theme-btn]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        root.setAttribute("data-theme", b.getAttribute("data-theme-btn"));
+        document.querySelectorAll("[data-theme-btn]").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      });
+    });
+    document.querySelectorAll(".chip").forEach(function (c) {
+      c.addEventListener("click", function () { c.setAttribute("aria-pressed", c.getAttribute("aria-pressed") === "true" ? "false" : "true"); });
+    });
+  </script>
+</body>
+</html>
